@@ -15,6 +15,6 @@
 - A meet should set an interval (e.g. 01/03 - 08/03) and the group members can choose dates and times when they area available in that interval.
 - They can propose activities or choose from those proposed by others.
 - For any meet, users can propose activities proposed in other meets.
-- Followint their preferences, the app will suggest a time interval, location and activity.
+- Following their preferences, the app will suggest a time interval, location and activity.
 - 15 minutes before meeting, the members on from the group will see on their maps the location they should arrive and the other members' locations.
 
