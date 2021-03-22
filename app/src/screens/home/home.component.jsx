@@ -1,9 +1,13 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import {Text, View} from 'react-native'
 
-const Home = () => (
-    <View>
-        Hello there
+import homeStyles from './home.styles'
+
+const Home = ({ navigation }) => (
+    <View style = {homeStyles.container}>
+        <Text>
+            Home Component
+        </Text>
     </View>
 )
 

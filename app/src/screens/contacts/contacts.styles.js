@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-const homeStyles = StyleSheet.create({
+const contactsStyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
@@ -9,4 +9,4 @@ const homeStyles = StyleSheet.create({
     },
   })
 
-  export default homeStyles
+  export default contactsStyles
