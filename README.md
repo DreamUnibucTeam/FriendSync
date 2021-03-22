@@ -18,3 +18,4 @@
 - Following their preferences, the app will suggest a time interval, location and activity.
 - 15 minutes before meeting, the members on from the group will see on their maps the location they should arrive and the other members' locations.
 
+# Project Checklist
