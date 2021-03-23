@@ -9,7 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from './src/screens/home/home.component'
 import Contacts from './src/screens/contacts/contacts.component'
-
+import Groups from './src/screens/groups/groups.component'
 
 const Tab = createBottomTabNavigator()
 
@@ -24,6 +24,10 @@ const App = () => {
         <Tab.Screen
           name = "Contacts"
           component = {Contacts}
+        />
+        <Tab.Screen
+          name = "Groups"
+          component = {Groups}
         />
       </Tab.Navigator>
     </NavigationContainer>
