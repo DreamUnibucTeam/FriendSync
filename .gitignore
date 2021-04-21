@@ -1,0 +1,6 @@
+# Redundand folders
+.expo
+
+# Big data folder
+node_modules
+

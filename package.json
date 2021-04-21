@@ -1,0 +1,27 @@
+{
+  "name": "friendsync",
+  "version": "1.0.0",
+  "description": "## Authors: - Ana-Maria Comorasu - Daniel Avram - Laura-Maria Tender - Nicolae Ducal",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DreamUnibucTeam/FriendSync.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DreamUnibucTeam/FriendSync/issues"
+  },
+  "homepage": "https://github.com/DreamUnibucTeam/FriendSync#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "firebase-admin": "^9.6.0"
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.2",
+    "nodemon": "^2.0.7"
+  }
+}
