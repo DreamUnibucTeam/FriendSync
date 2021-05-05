@@ -15,7 +15,9 @@ const SignInScreen = ({navigation}) => {
         
             <View style={styles.container}> 
                 <View style={styles.main}>
-                    <CustomText text="Welcome back"/>
+                    <CustomText title semi center>
+                        Welcome back
+                    </CustomText>
                 </View>
 
                 <View style={styles.auth}>
@@ -55,13 +57,19 @@ const SignInScreen = ({navigation}) => {
                     {loading ? (
                         <ActivityIndicator style={styles.loading} />
                     ) : (
-                        <CustomText text="Sign In" />
+                        <CustomText bold center color="#fff">
+                            Sign In
+                        </CustomText>
                     )}
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.sign} onPress={() => navigation.navigate("Sign Up")}>
-                    <CustomText text="New to SocialApp?" />
-                    <CustomText text="Sign Up" />
+                    <CustomText small center>
+                        New to SocialApp?{" "}
+                        <CustomText bold color='#8022d9'>
+                            Sign Up
+                        </CustomText>
+                    </CustomText>
 
                 </TouchableOpacity>
                 

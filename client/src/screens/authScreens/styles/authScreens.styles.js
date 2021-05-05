@@ -8,7 +8,9 @@ const authScreensStyles = StyleSheet.create({
         marginTop: 192
     },
     auth: {
-        margin: '64px 32px 23px'
+        marginTop: 64,
+        marginHorizontal: 32,
+        marginBottom: 23,
     },
     authContainer: {
         marginBottom: 32
@@ -25,7 +27,7 @@ const authScreensStyles = StyleSheet.create({
         height: 48
     },
     signContainer: {
-        margin: '0 32px',
+        marginHorizontal: 32,
         height: 48,
         alignItems: 'center',
         justifyContent: 'center',

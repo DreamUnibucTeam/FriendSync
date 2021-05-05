@@ -12,19 +12,20 @@ import Groups from './src/screens/groups/groups.component'
 import SignInScreen from './src/screens/authScreens/signin/signInScreen.component'
 import SignUpScreen from './src/screens/authScreens/signup/signUpScreen.component'
 
-const Tab = createBottomTabNavigator()
+
 
 const App = () => {
+  const Tab = createBottomTabNavigator()
   return (
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen
-          name="Sign In"
-          component={SignInScreen}
-        />
-        <Tab.Screen
           name="Sign Up"
           component={SignUpScreen}
+        />
+        <Tab.Screen
+          name="Sign In"
+          component={SignInScreen}
         />
         <Tab.Screen
           name = "Home"
