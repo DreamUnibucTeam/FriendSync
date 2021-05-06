@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/DreamUnibucTeam/FriendSync#readme",
   "dependencies": {
+    "dotenv": "^8.5.1",
     "express": "^4.17.1",
     "firebase-admin": "^9.6.0"
   },
