@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Text, View, TextInput } from 'react-native'
+import { Text, View, TextInput, ScrollView } from 'react-native'
 import { Icon } from 'react-native-elements'
 
 import groupsStyles from './groups.styles'
@@ -21,7 +21,7 @@ class Groups extends React.Component{
     render() {
 
         return (
-            <View style = {groupsStyles.container}>
+            <ScrollView style = {groupsStyles.container}>
 
                 <View> style = {groupsStyles.header}
                     <View style = {groupsStyles.search}>
@@ -61,7 +61,7 @@ class Groups extends React.Component{
 
                 
             
-            </View>
+            </ScrollView>
         )
     }
 }
