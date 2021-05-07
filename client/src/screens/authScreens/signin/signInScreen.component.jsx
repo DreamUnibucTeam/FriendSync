@@ -80,7 +80,7 @@ const SignInScreen = ({ navigation }) => {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator style={styles.loading} />
+              <ActivityIndicator style={styles.loading} color="#fff" />
             ) : (
               <CustomText bold center color="#fff">
                 Sign In

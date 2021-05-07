@@ -80,7 +80,7 @@ const SignUpScreen = ({ navigation }) => {
 
       await Firebase.createUserProfile({
         uid: user.uid,
-        displayName,
+        displayName: displayName.trim(),
         email,
         profilePhoto: profilePhoto ? profilePhoto : "default",
       });
@@ -130,9 +130,7 @@ const SignUpScreen = ({ navigation }) => {
                 style={styles.authField}
                 autoCapitalize="none"
                 autoCorrect={false}
-                onChangeText={(displayName) =>
-                  setDisplayName(displayName.trim())
-                }
+                onChangeText={(displayName) => setDisplayName(displayName)}
                 value={displayName}
               />
             </View>
@@ -167,7 +165,7 @@ const SignUpScreen = ({ navigation }) => {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator style={styles.loading} />
+              <ActivityIndicator style={styles.loading} color="#fff" />
             ) : (
               <CustomText bold center color="#fff">
                 Sign Up

@@ -7,6 +7,11 @@ import homeStyles from "./home.styles";
 const Home = ({ navigation }) => (
   <View style={homeStyles.container}>
     <Text>Home Component</Text>
+    <View>
+      <Text>{auth.currentUser.uid}</Text>
+      <Text>{auth.currentUser.displayName}</Text>
+      <Text>{auth.currentUser.email}</Text>
+    </View>
     <TouchableOpacity
       style={{
         marginHorizontal: 32,

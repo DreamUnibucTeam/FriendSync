@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useLayoutEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { UserContext } from "../context/UserContext";
@@ -11,16 +11,19 @@ import MainStackScreens from "./MainStackScreens";
 const AppStackScreens = () => {
   const Firebase = useContext(FirebaseContext);
   const [user, setUser] = useContext(UserContext);
+  let isMounted = false;
+  let unsubscribeFromAuth = null;
   const AppStack = createStackNavigator();
 
   /* ComponentDidMount */
-  useEffect(() => {
-    const unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+  useLayoutEffect(() => {
+    isMounted = true;
+    unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         try {
           const userRef = await Firebase.getUserRef(userAuth);
           userRef.onSnapshot((snapShot) => {
-            if (snapShot.exists) {
+            if (snapShot.exists && isMounted) {
               setUser({
                 uid: snapShot.id,
                 email: snapShot.data().email,
@@ -36,17 +39,25 @@ const AppStackScreens = () => {
         }
       }
 
-      setUser({
-        uid: "",
-        email: "",
-        displayName: "",
-        profilePhotoUrl: "default",
-        isLoggedIn: false,
-      });
+      if (isMounted) {
+        setUser({
+          uid: "",
+          email: "",
+          displayName: "",
+          profilePhotoUrl: "default",
+          isLoggedIn: false,
+        });
+      }
     });
 
     /* ComponentWillUnmount */
-    return () => unsubscribeFromAuth();
+    return () => {
+      if (unsubscribeFromAuth) {
+        unsubscribeFromAuth();
+        unsubscribeFromAuth = null;
+      }
+      isMounted = false;
+    };
   }, []);
 
   return (
