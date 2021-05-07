@@ -6,6 +6,7 @@ const FirebaseContext = createContext();
 const Firebase = {
   getCurrentUser: () => auth.currentUser,
   getCurrentUserId: () => auth.currentUser.uid,
+  getUserRef: (user) => db.collection("users").doc(user.uid),
   createUserProfile: async (userData) => {
     if (!userData) return;
 
@@ -16,9 +17,7 @@ const Firebase = {
       const { displayName, email, profilePhoto } = userData;
       const creationDate = new Date();
 
-      const profilePhotoUrl;
-      if (userData.profilePhoto)
-        profilePhotoUrl = await Firebase.uploadProfilePhoto(profilePhoto);
+      const profilePhotoUrl = await Firebase.uploadProfilePhoto(profilePhoto);
 
       try {
         await userRef.set({
@@ -38,20 +37,17 @@ const Firebase = {
     return userRef;
   },
   uploadProfilePhoto: async (uri) => {
+    if (uri === "default")
+      return "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/profilePhotos%2Fdefault.jpg?alt=media&token=79259943-c556-409f-a072-205422420cf0";
     const uid = Firebase.getCurrentUserId();
 
     try {
       const photo = await Firebase.getBlob(uri);
 
-      const imageRef = firebase.storage.ref("profilePhotos").child(uid);
+      const imageRef = storage.ref().child(`profilePhotos/${uid}$`);
       await imageRef.put(photo);
 
       const url = await imageRef.getDownloadURL();
-
-      await db.collection("users").doc(uid).update({
-        profilePhotoUrl: url,
-      });
-
       return url;
     } catch (error) {
       console.log(
@@ -61,9 +57,20 @@ const Firebase = {
     }
   },
   getBlob: async (uri) => {
-    const data = await fetch(uri);
-    data = await data.blob();
-    return data;
+    // Source: https://github.com/expo/expo/issues/2402
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function () {
+        reject(new TypeError("Error @getBlob: Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+    return blob;
   },
 };
 
