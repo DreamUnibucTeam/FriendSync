@@ -11,19 +11,18 @@ import MainStackScreens from "./MainStackScreens";
 const AppStackScreens = () => {
   const Firebase = useContext(FirebaseContext);
   const [user, setUser] = useContext(UserContext);
-  let isMounted = false;
-  let unsubscribeFromAuth = null;
   const AppStack = createStackNavigator();
 
   /* ComponentDidMount */
   useLayoutEffect(() => {
-    isMounted = true;
-    unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+    let unsubscribeFromSnapshot = null;
+    const unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         try {
           const userRef = await Firebase.getUserRef(userAuth);
-          userRef.onSnapshot((snapShot) => {
-            if (snapShot.exists && isMounted) {
+          const snapShot = userRef.get();
+          unsubscribeFromSnapshot = userRef.onSnapshot((snapShot) => {
+            if (snapShot.exists) {
               setUser({
                 uid: snapShot.id,
                 email: snapShot.data().email,
@@ -31,15 +30,12 @@ const AppStackScreens = () => {
                 profilePhotoUrl: snapShot.data().profilePhotoUrl,
                 isLoggedIn: true,
               });
-              // console.log(user);
             }
           });
         } catch (error) {
           console.log("Error @onAuthStateChanged: ", error.message);
         }
-      }
-
-      if (isMounted) {
+      } else {
         setUser({
           uid: "",
           email: "",
@@ -52,11 +48,8 @@ const AppStackScreens = () => {
 
     /* ComponentWillUnmount */
     return () => {
-      if (unsubscribeFromAuth) {
-        unsubscribeFromAuth();
-        unsubscribeFromAuth = null;
-      }
-      isMounted = false;
+      unsubscribeFromSnapshot && unsubscribeFromSnapshot();
+      unsubscribeFromAuth && unsubscribeFromAuth();
     };
   }, []);
 
