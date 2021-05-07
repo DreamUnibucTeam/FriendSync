@@ -26,7 +26,9 @@
     "react-native-unimodules": "~0.13.3",
     "react-native-web": "~0.13.12",
     "styled-components": "^5.3.0",
-    "firebase": "8.2.3"
+    "firebase": "8.2.3",
+    "expo-media-library": "~12.0.2",
+    "expo-image-picker": "~10.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
