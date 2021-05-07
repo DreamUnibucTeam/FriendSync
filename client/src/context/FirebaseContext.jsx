@@ -6,6 +6,7 @@ const FirebaseContext = createContext();
 const Firebase = {
   getCurrentUser: () => auth.currentUser,
   getCurrentUserId: () => auth.currentUser.uid,
+  getCurrentUserToken: () => auth.currentUser.getIdToken(),
   getUserRef: (user) => db.collection("users").doc(user.uid),
   createUserProfile: async (userData) => {
     if (!userData) return;
