@@ -9,7 +9,7 @@
     "dev": "nodemon app.js",
     "build:client": "npm install --prefix app",
     "dev:client": "expo start app",
-    "dev:all": "concurrently \"nodemon app.js\" \"expo start app\"",
+    "dev:all": "concurrently \"nodemon app.js\" \"expo start client\"",
     "test": "jest"
   },
   "repository": {

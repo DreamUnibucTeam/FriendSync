@@ -8,6 +8,9 @@ const app = express();
 
 const PORT = process.env.PORT ?? 8000;
 
+/* Middlewares */
+app.use(express.json({ extended: true }));
+
 /* API Routes */
 app.use("/api/auth", require(path.join(__dirname, "routes", "auth.routes.js")));
 
