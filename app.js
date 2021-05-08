@@ -13,6 +13,10 @@ app.use(express.json({ extended: true }));
 
 /* API Routes */
 app.use("/api/auth", require(path.join(__dirname, "routes", "auth.routes.js")));
+app.use(
+  "/api/report",
+  require(path.join(__dirname, "routes", "report.routes.js"))
+);
 
 app.get("/", (req, res) => {
   res.send("REST API Server for FriendSync application");
