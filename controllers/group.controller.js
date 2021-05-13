@@ -1,4 +1,4 @@
-const {auth, db} = require('../firebase/firebase.admin.js')
+const { auth, db } = require("../firebase/firebase.admin.js");
 
 const GroupController = (() => {
   /* Intanta care salveaza referinta controller-ului */
@@ -12,75 +12,99 @@ const GroupController = (() => {
       /* Groups */
       getGroup: async (req, res) => {
         try {
-          const id = req.params.id
-          const groupSnapshot = db.collection('groups').doc(id)
+          const id = req.params.id;
+          const groupSnapshot = await db.collection("groups").doc(id).get();
           if (groupSnapshot.exists) {
-            return res.status(200).json({ group: {id, ...groupSnapshot.data()} })
+            return res
+              .status(200)
+              .json({ group: { id, ...groupSnapshot.data() } });
           }
-          return res.status(500).json({ message: "The groups does not exist or has been deleted" })
+          return res
+            .status(500)
+            .json({ message: "The groups does not exist or has been deleted" });
         } catch (error) {
-          console.log("Error @GroupController/getGroup: ", error.message)
-          return res.status(500).json({ message: error.message })  
+          console.log("Error @GroupController/getGroup: ", error.message);
+          return res.status(500).json({ message: error.message });
         }
       },
 
       createGroup: async (req, res) => {
         try {
-          const { uid, name } = req.body
-          const creationDate = (new Date()).toString()
-          const result = await db.collection('groups').add({ name, owner: uid, creationDate })
-          const groupId = result.id
-          const makeAdminResult = await db.collection('belongsTo').add({ userId: uid, groupId, isAdmin: True, schedule: null })
-          res.status(200).json({ message: 'Group has been created successfully'})
+          const { uid, name } = req.body;
+          const creationDate = new Date().toString();
+          const result = await db
+            .collection("groups")
+            .add({ name, owner: uid, creationDate });
+          const groupId = result.id;
+          const makeAdminResult = await db
+            .collection("belongsTo")
+            .add({ userUid: uid, groupId, isAdmin: true, schedule: null });
+          res
+            .status(200)
+            .json({ message: "Group has been created successfully" });
         } catch (error) {
-          console.log("Error @GroupController/createGroup: ", error.message)
-          return res.status(500).json({ message: error.message })  
+          console.log("Error @GroupController/createGroup: ", error.message);
+          return res.status(500).json({ message: error.message });
         }
       },
 
       removeGroup: async (req, res) => {
         try {
-          const id = req.params.id
-          const { uid } = req.body
+          const groupId = req.params.id;
+          const { uid } = req.body;
           // const uid = req.user.uid
 
-          const groupRef = db.collection('groups').doc(id)
-          const groupSnapshot = await groupRef.get()
+          const groupRef = db.collection("groups").doc(groupId);
+          const groupSnapshot = await groupRef.get();
           if (!groupSnapshot.exists) {
-            return res.status(500).json({ message: "Group has been deleted or does not exist" })
+            return res
+              .status(500)
+              .json({ message: "Group has been deleted or does not exist" });
           }
-          if (groupSnapshot.data().owner != uid) {
-            return res.status(500).json({ message: "You are not the group's admin to delete it" })
+          if (groupSnapshot.data().owner !== uid) {
+            return res.status(500).json({
+              message: "You don't have enough permissions to delete the group",
+            });
           }
-          const result = await groupRef.delete()
-          
+          const result = await groupRef.delete();
+
           // Stergem toate belongs to din tabel
-          const belongsToSnapshot = await db.collection('belongsTo').where('groupId', '==', groupId).get()
-          if (belongsToSnapshot.exists) {
-            belongsToSnapshot.forEach(async (doc) => {
-              await doc.ref.delete()
-              // TODO: check again
-            })
+          const belongsToQuery = await db
+            .collection("belongsTo")
+            .where("groupId", "==", groupId)
+            .get();
+
+          const belongsIds = [];
+          if (!belongsToQuery.empty) {
+            belongsToQuery.forEach((doc) => {
+              belongsIds.push(doc.id);
+            });
           }
-          res.status(200).json({ message: "The group has been successfully deleted" })
+
+          for (const bid of belongsIds) {
+            await db.collection("belongsTo").doc(bid).delete();
+          }
+
+          res
+            .status(200)
+            .json({ message: "The group has been successfully deleted" });
         } catch (error) {
-          console.log("Error @GroupController/removeGroup: ", error.message)
-          return res.status(500).json({ message: error.message })  
+          console.log("Error @GroupController/removeGroup: ", error.message);
+          return res.status(500).json({ message: error.message });
         }
-      }
-    }
-  }
+      },
+    };
+  };
 
   return {
     getInstance: function () {
-      if (!instance) instance = init()
-      return instance
-    }
-  }
-})()
+      if (!instance) instance = init();
+      return instance;
+    },
+  };
+})();
 
-
-module.exports = GroupController
+module.exports = GroupController;
 
 /*
     User Controller
