@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
-import { Text, View, TextInput, ScrollView } from "react-native";
+import { Text, View, TextInput, ScrollView, TouchableOpacity } from "react-native";
 import { Icon } from "react-native-elements";
 
 import groupsStyles from "./groups.styles";
 import groupsData from "./groups.data";
 
 import Group from "../../components/group/group.component";
+import GroupStackScreens from '../../stacks/GroupStackScreens'
 
 const Groups = ({navigation}) => {
   const [groupList, setGroupList] = useState(groupsData)
@@ -34,12 +35,17 @@ const Groups = ({navigation}) => {
       <View style={groupsStyles.groupList}>
         {groupList.map(
           ({ id, groupName, groupPhotoUrl, lastMessage }) => (
-            <Group
+            <TouchableOpacity
+              onPress={GroupStackScreens}
               key={id}
-              groupName={groupName}
-              groupPhotoUrl={groupPhotoUrl}
-              lastMessage={lastMessage}
-            />
+            >
+              <Group
+                
+                groupName={"groupName"}
+                groupPhotoUrl={groupPhotoUrl}
+                lastMessage={"lastMessage"}
+              />
+            </TouchableOpacity>
           )
         )}
       </View>
