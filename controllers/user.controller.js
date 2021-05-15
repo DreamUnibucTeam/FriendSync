@@ -231,7 +231,7 @@ const UserController = (() => {
             const result = await db
               .collection("belongsTo")
               .add({ userUid, groupId, isAdmin: false, schedule: null });
-            return res.status(200).json({ message: "User added to group." });
+            return res.status(200).json({ message: "User added to group" });
           } else {
             return res
               .status(500)
