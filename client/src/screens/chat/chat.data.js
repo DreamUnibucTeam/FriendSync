@@ -1,4 +1,4 @@
-export default Messages = [
+const Messages = [
     {
         id: '1',
         groupName: "La o bauta cu baietii",
@@ -28,3 +28,5 @@ export default Messages = [
         messageText: 'Hai la o cafelutza'
     },
 ]
+
+ export default Messages

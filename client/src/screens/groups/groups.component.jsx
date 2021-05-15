@@ -7,7 +7,6 @@ import groupsStyles from "./groups.styles";
 import groupsData from "./groups.data";
 
 import Group from "../../components/group/group.component";
-import GroupStackScreens from '../../stacks/GroupStackScreens'
 
 const Groups = ({navigation}) => {
   const [groupList, setGroupList] = useState(groupsData)
@@ -36,14 +35,21 @@ const Groups = ({navigation}) => {
         {groupList.map(
           ({ id, groupName, groupPhotoUrl, lastMessage }) => (
             <TouchableOpacity
-              onPress={GroupStackScreens}
+              onPress={() =>navigation.navigate("ChatStack", {
+                screen: 'Chat',
+                params: {
+                  id:id, 
+                  groupName:groupName, 
+                  groupPhotoUrl:groupPhotoUrl
+                }
+              })}
               key={id}
             >
               <Group
                 
-                groupName={"groupName"}
+                groupName={groupName}
                 groupPhotoUrl={groupPhotoUrl}
-                lastMessage={"lastMessage"}
+                lastMessage={lastMessage}
               />
             </TouchableOpacity>
           )
