@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image } from 'react-native'
 import { Icon } from 'react-native-elements'
 import React, {useState, useEffect, useContext} from 'react'
 import * as Location from 'expo-location'
+import styled from "styled-components/native"
 
 import {UserContext} from '../../context/UserContext'
 
@@ -28,8 +29,8 @@ export default () => {
 
   const [location, setLocation] = useState({
     coords: {
-      latitude: 40,
-      longitude: 40
+      latitude: 47.0980,
+      longitude: 28.8247
     }
   });
   const [errorMsg, setErrorMsg] = useState(null);
@@ -66,24 +67,37 @@ export default () => {
                   latitude: location?.coords.latitude,
                   longitude: location?.coords.longitude,
               }}
-              title='ssss'
-              description={JSON.stringify(location)}
+              title=  {user.displayName}
+              description="5 km"
               //image={{uri: user.profilePhotoUrl}}
               
 
           >
             <Text>sasy</Text>
-            <Image
-              source={{uri: user.profilePictureUrl}}
+            <ImageMarkerWrapper
+            source={{uri: user.profilePhotoUrl}}
             />
-            <Icon
+
+            {/* <Icon
               name='sc-telegram'
               type='evilicon'
               color='#517fa4'
-            />
+            /> */}
           </Marker>
       </MapView>
     </View>
   )
 }
 
+
+
+
+const ImageMarkerWrapper = styled.Image`
+  flex: 1;
+  border: solid 2px gray;
+  border-radius: 50;
+  align-items: center;
+  justify-content: center;
+  height: 75; 
+  width: 75;
+`

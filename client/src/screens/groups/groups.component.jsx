@@ -22,7 +22,7 @@ const Groups = ({navigation}) => {
       const data = await request(`${REST_API_LINK}/api/users/belongsTo/groups/${user.uid}`, 'GET', null, {
         Authorization: `Bearer ${token}`
       })
-      setGroupList(data)
+      setGroupList(data.groups)
       console.log(data)
     } catch (error) {
       console.log("Error @GroupsComponent/getGroups: ", error.message)
