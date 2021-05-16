@@ -17,7 +17,14 @@ const GroupController = (() => {
           if (groupSnapshot.exists) {
             return res
               .status(200)
-              .json({ group: { id, ...groupSnapshot.data() } });
+              .json({
+                group: {
+                  id,
+                  ...groupSnapshot.data(),
+                  groupPhotoUrl:
+                    "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/groupPhotos%2Fdefault.png?alt=media&token=33f6237b-950e-425e-969c-3bc5de8dd1b2",
+                },
+              });
           }
           return res
             .status(500)
