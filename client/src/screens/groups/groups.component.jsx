@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { Text, View, TextInput, ScrollView } from "react-native";
+import { Text, View, TextInput, ScrollView, TouchableOpacity } from "react-native";
 import { Icon } from "react-native-elements";
 
 import groupsStyles from "./groups.styles";
@@ -8,51 +8,55 @@ import groupsData from "./groups.data";
 
 import Group from "../../components/group/group.component";
 
-class Groups extends React.Component {
-  constructor() {
-    super();
-
-    this.state = {
-      groups: groupsData,
-    };
-  }
-
-  render() {
-    return (
-      <ScrollView style={groupsStyles.container}>
-        <View>
-          {" "}
-          style = {groupsStyles.header}
-          <View style={groupsStyles.search}>
-            <TextInput style={groupsStyles.searchInput} />
-            <Icon
-              style={groupsStyles.searchIcon}
-              name="search"
-              type="font-awesome"
-            />
-          </View>
+const Groups = ({navigation}) => {
+  const [groupList, setGroupList] = useState(groupsData)
+  return (
+    <ScrollView style={groupsStyles.container}>
+      <View
+        style ={groupsStyles.header}>
+        <Text>{" "}</Text>
+        
+        <View style={groupsStyles.search}>
+          <TextInput style={groupsStyles.searchInput} />
           <Icon
-            style={groupsStyles.createGroup}
-            name="plus"
+            style={groupsStyles.searchIcon}
+            name="search"
             type="font-awesome"
           />
         </View>
+        <Icon
+          style={groupsStyles.createGroup}
+          name="plus"
+          type="font-awesome"
+        />
+      </View>
 
-        <View style={groupsStyles.groupList}>
-          {this.state.groups.map(
-            ({ id, groupName, groupPhotoUrl, lastMessage }) => (
+      <View style={groupsStyles.groupList}>
+        {groupList.map(
+          ({ id, groupName, groupPhotoUrl, lastMessage }) => (
+            <TouchableOpacity
+              onPress={() =>navigation.navigate("ChatStack", {
+                screen: 'Chat',
+                params: {
+                  id:id, 
+                  groupName:groupName, 
+                  groupPhotoUrl:groupPhotoUrl
+                }
+              })}
+              key={id}
+            >
               <Group
-                key={id}
+                
                 groupName={groupName}
                 groupPhotoUrl={groupPhotoUrl}
                 lastMessage={lastMessage}
               />
-            )
-          )}
-        </View>
-      </ScrollView>
-    );
-  }
+            </TouchableOpacity>
+          )
+        )}
+      </View>
+    </ScrollView>
+  );
 }
 
 export default Groups;
