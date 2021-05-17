@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
-  StatusBar,
   Platform,
 } from "react-native";
 import { Button, Icon, ListItem } from "@ui-kitten/components";
@@ -13,7 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { auth } from "../../firebase/firebase";
 import { FirebaseContext } from "../../context/FirebaseContext";
 import { ScrollView } from "react-native-gesture-handler";
-
+import FocusAwareStatusBar from "../../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
 import styles from "./home.styles";
 import HomescreenContainer from "../../components/homescreen-container/homescreen-container.component";
 
@@ -127,7 +126,7 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
+      <FocusAwareStatusBar
         barStyle="light-content"
         hidden={false}
         backgroundColor={Platform.OS == "android" ? "#000" : ""}

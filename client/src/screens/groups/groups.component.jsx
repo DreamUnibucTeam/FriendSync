@@ -6,13 +6,17 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  StatusBar,
   FlatList,
+  Platform,
 } from "react-native";
+import FocusAwareStatusBar from "../../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
 import { useIsFocused } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 import { useHttp } from "../../hooks/http.hook";
 import { UserContext } from "../../context/UserContext";
 import { auth } from "../../firebase/firebase";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import groupsStyles, {
   Container,
@@ -29,11 +33,11 @@ import groupsStyles, {
 import groupsData from "./groups.data";
 
 import Group from "../../components/group/group.component";
-import { MessageText, PostTime, TextSection } from "./groups.styles";
+import groupStyles from "../../components/group/group.styles";
 
 const Groups = ({ navigation }) => {
   const { request, loading, REST_API_LINK, error } = useHttp();
-  const [groupList, setGroupList] = useState(groupsData);
+  const [groupList, setGroupList] = useState();
   const [user, setUser] = useContext(UserContext);
   const isFocused = useIsFocused();
 
@@ -77,32 +81,70 @@ const Groups = ({ navigation }) => {
   }, [request]);
 
   useEffect(() => {
-    // isFocused && getGroups();
+    isFocused && getGroups();
   }, [getGroups, isFocused]);
 
   // groupId, name
-  const renderGroupItem = (item) => {
-    <Card>
+  const renderGroupItem = ({ item }) => (
+    <Card
+      onPress={() =>
+        navigation.navigate("ChatStack", {
+          screen: "Chat",
+          params: {
+            id: item.groupId,
+            groupName: item.name,
+            groupPhotoUrl: item.groupPhotoUrl,
+          },
+        })
+      }
+    >
       <GroupInfo>
         <GroupImgWrapper>
-          <GroupImg source={item.groupPhotoUrl}></GroupImg>
+          <GroupImg
+            source={{
+              uri: item.groupPhotoUrl,
+            }}
+          ></GroupImg>
         </GroupImgWrapper>
+        <TextSection>
+          <GroupInfoText>
+            <GroupName>{item.name}</GroupName>
+            {
+              //<PostTime>4 am</PostTime>
+            }
+          </GroupInfoText>
+          {
+            //<MessageText>Hellow</MessageText>
+          }
+        </TextSection>
       </GroupInfo>
-    </Card>;
-  };
+    </Card>
+  );
 
-  if (loading) {
-    return (
-      <View>
-        <Text>Loading</Text>
-      </View>
-    );
-  }
+  // if (true) {
+  //   return <Loader />;
+  // }
 
   return (
-    <SafeAreaView style={groupsStyles.container}>
-      <Container></Container>
-    </SafeAreaView>
+    <>
+      <FocusAwareStatusBar
+        barStyle={Platform.OS === "android" ? "light-content" : "dark-content"}
+        hidden={false}
+        backgroundColor={Platform.OS === "android" ? "#000" : ""}
+      />
+      <Spinner
+        visible={loading}
+        textContent={"Loading groups..."}
+        textStyle={{ color: "#fff" }}
+      />
+      <Container>
+        <FlatList
+          data={groupList}
+          keyExtractor={(item) => item.groupId}
+          renderItem={(item) => renderGroupItem(item)}
+        />
+      </Container>
+    </>
   );
 };
 

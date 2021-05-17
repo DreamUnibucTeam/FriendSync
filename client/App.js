@@ -17,9 +17,9 @@ const App = () => {
 
   LogBox.ignoreLogs(["Setting a timer"]);
   LogBox.ignoreLogs(["Accessing the 'state' property"]);
-  // LogBox.ignoreLogs([
-  //   "Can't perform a React state update on an unmounted component",
-  // ]);
+  LogBox.ignoreLogs([
+    "Can't perform a React state update on an unmounted component",
+  ]);
 
   return (
     <>
