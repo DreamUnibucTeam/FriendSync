@@ -33,9 +33,13 @@ const SignUpScreen = ({ navigation }) => {
   const [profilePhoto, setProfilePhoto] = useState();
 
   const getPermission = async () => {
-    if (Platform.OS != "web") {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      return status;
+    try {
+      if (Platform.OS != "web") {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        return status;
+      }
+    } catch (error) {
+      console.log("Error @SignUp/getPermission: ", error.message);
     }
   };
 
@@ -57,16 +61,20 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const addProfilePhoto = async () => {
-    const status = await getPermission();
+    try {
+      const status = await getPermission();
 
-    if (status !== "granted") {
-      Alert.alert(
-        "Permissions required",
-        "We need permission to access your camera roll"
-      );
-      return;
+      if (status !== "granted") {
+        Alert.alert(
+          "Permissions required",
+          "We need permission to access your camera roll"
+        );
+        return;
+      }
+      await pickImage();
+    } catch (error) {
+      console.log("Error @SignUp/addProfilePhoto: ", error.message);
     }
-    pickImage();
   };
 
   const signUp = async (event) => {

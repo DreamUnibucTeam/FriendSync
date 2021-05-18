@@ -15,9 +15,14 @@ const GroupController = (() => {
           const id = req.params.id;
           const groupSnapshot = await db.collection("groups").doc(id).get();
           if (groupSnapshot.exists) {
-            return res
-              .status(200)
-              .json({ group: { id, ...groupSnapshot.data() } });
+            return res.status(200).json({
+              group: {
+                id,
+                ...groupSnapshot.data(),
+                // groupPhotoUrl:
+                //   "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/groupPhotos%2Fdefault.png?alt=media&token=33f6237b-950e-425e-969c-3bc5de8dd1b2",
+              },
+            });
           }
           return res
             .status(500)
@@ -30,11 +35,11 @@ const GroupController = (() => {
 
       createGroup: async (req, res) => {
         try {
-          const { uid, name } = req.body;
+          const { uid, name, groupPhotoUrl } = req.body;
           const creationDate = new Date().toString();
           const result = await db
             .collection("groups")
-            .add({ name, owner: uid, creationDate });
+            .add({ name, owner: uid, creationDate, groupPhotoUrl });
           const groupId = result.id;
           const makeAdminResult = await db
             .collection("belongsTo")
