@@ -1,5 +1,6 @@
 import React, { useState, createContext } from "react";
 import firebase, { auth, db, storage } from "../firebase/firebase";
+import { v4 as uuidv4 } from "uuid";
 
 const FirebaseContext = createContext();
 
@@ -53,6 +54,25 @@ const Firebase = {
     } catch (error) {
       console.log(
         "Error @Firebase.uploadProfilePhoto while uploading profile photo: ",
+        error.message
+      );
+    }
+  },
+  uploadGroupPhoto: async (uri) => {
+    if (uri === "default")
+      return "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/groupPhotos%2Fdefault.png?alt=media&token=33f6237b-950e-425e-969c-3bc5de8dd1b2";
+
+    try {
+      const photo = await Firebase.getBlob(uri);
+
+      const imageRef = storage.ref().child(`groupPhotos/${uuidv4()}$`);
+      await imageRef.put(photo);
+
+      const url = await imageRef.getDownloadURL();
+      return url;
+    } catch (error) {
+      console.log(
+        "Error @Firebase.uploadGroupPhoto while uploading group photo: ",
         error.message
       );
     }

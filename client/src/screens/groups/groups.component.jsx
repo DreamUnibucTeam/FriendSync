@@ -33,7 +33,6 @@ import groupsStyles, {
 import groupsData from "./groups.data";
 
 import Group from "../../components/group/group.component";
-import groupStyles from "../../components/group/group.styles";
 
 const Groups = ({ navigation }) => {
   const { request, loading, REST_API_LINK, error } = useHttp();
@@ -120,10 +119,6 @@ const Groups = ({ navigation }) => {
       </GroupInfo>
     </Card>
   );
-
-  // if (true) {
-  //   return <Loader />;
-  // }
 
   return (
     <>

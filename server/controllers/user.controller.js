@@ -294,8 +294,7 @@ const UserController = (() => {
                 groupId: groupSnapshot.id,
                 name: groupSnapshot.data().name,
                 creationDate: groupSnapshot.data().creationDate,
-                groupPhotoUrl:
-                  "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/groupPhotos%2Fdefault.png?alt=media&token=33f6237b-950e-425e-969c-3bc5de8dd1b2",
+                groupPhotoUrl: groupSnapshot.data().groupPhotoUrl,
               });
             } else {
               console.log("Warning @UserController/getGroups: Group not found");
