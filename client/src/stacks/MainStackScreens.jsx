@@ -1,10 +1,16 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Entypo, Ionicons, FontAwesome } from "@expo/vector-icons";
+import {
+  Entypo,
+  Ionicons,
+  FontAwesome,
+  FontAwesome5,
+} from "@expo/vector-icons";
 
 import Home from "../screens/home/home.component";
-import Contacts from "../screens/contacts/contacts.component";
+import Friends from "../screens/friends/friends.component";
 import GroupStackScreens from "./GroupStackScreens";
+import FriendsStackScreens from "./FriendsStackScreens";
 
 const MainStackScreens = () => {
   const Tab = createBottomTabNavigator();
@@ -19,6 +25,7 @@ const MainStackScreens = () => {
     }
     return true;
   };
+
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -32,8 +39,10 @@ const MainStackScreens = () => {
             return <Entypo name="home" size={size} color={color} />;
           if (route.name === "Groups")
             return <FontAwesome name="group" size={size} color={color} />;
-          if (route.name === "Contacts")
-            return <Ionicons name="person" size={size} color={color} />;
+          if (route.name === "Friends")
+            return (
+              <FontAwesome5 name="user-friends" size={size} color={color} />
+            );
         },
       })}
     >
@@ -47,7 +56,13 @@ const MainStackScreens = () => {
         })}
       />
 
-      <Tab.Screen name="Contacts" component={Contacts} />
+      <Tab.Screen
+        name="Friends"
+        component={FriendsStackScreens}
+        options={({ route }) => ({
+          tabBarVisible: getTabBarVisibility(route),
+        })}
+      />
     </Tab.Navigator>
   );
 };

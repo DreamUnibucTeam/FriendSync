@@ -40,27 +40,6 @@ const Groups = ({ navigation }) => {
   const [user, setUser] = useContext(UserContext);
   const isFocused = useIsFocused();
 
-  const createGroup = async () => {
-    try {
-      const token = await auth.currentUser.getIdToken();
-      const data = await request(
-        `${REST_API_LINK}/api/groups/group`,
-        "POST",
-        {
-          uid: user.uid,
-          name: "Test Add Grup",
-        },
-        {
-          Authorization: `Bearer ${token}`,
-        }
-      );
-
-      await getGroups();
-    } catch (error) {
-      console.log("Error @GroupsComponent/createGroup: ", error.message);
-    }
-  };
-
   const getGroups = useCallback(async () => {
     try {
       const token = await auth.currentUser.getIdToken();

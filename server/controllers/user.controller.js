@@ -39,6 +39,37 @@ const UserController = (() => {
     /* Public functions */
     return {
       /* Users */
+      getAllUsers: async (req, res) => {
+        try {
+          const usersQuery = await db.collection("users").get();
+
+          const userIds = [];
+          if (!usersQuery.empty) {
+            usersQuery.forEach((user) => {
+              userIds.push(user.id);
+            });
+          }
+
+          const users = [];
+          for (const uid of userIds) {
+            const userData = await getUser(uid);
+            users.push({
+              uid,
+              displayName: userData.displayName,
+              email: userData.email,
+              profilePhotoUrl: userData.profilePhotoUrl,
+            });
+          }
+
+          res.status(200).json({ users });
+        } catch (error) {
+          console.log("Error @UserController/getAllUsers: ", error.message);
+          return res
+            .status(500)
+            .json({ message: "Unable to update get all users" });
+        }
+      },
+
       updateLocation: async (req, res) => {
         const uid = req.params.uid;
         const coordonate = req.body;
@@ -90,6 +121,7 @@ const UserController = (() => {
               friendshipId: friendship.id,
               uid: friendUid,
               name: friendData.displayName,
+              startDate: friendship.data().startDate,
             });
           }
 
