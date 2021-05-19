@@ -39,8 +39,9 @@ const UserController = (() => {
     /* Public functions */
     return {
       /* Users */
-      getAllUsers: async (req, res) => {
+      getAllUserRelations: async (req, res) => {
         try {
+          const uid = req.params.uid;
           const usersQuery = await db.collection("users").get();
 
           const userIds = [];
@@ -50,20 +51,85 @@ const UserController = (() => {
             });
           }
 
+          const userRelations = {};
+          /* Friend requests from users */
+          const receivedRequestsQuery = await db
+            .collection("friendRequests")
+            .where("toUid", "==", uid)
+            .get();
+          if (!receivedRequestsQuery.empty) {
+            receivedRequestsQuery.forEach((received) => {
+              const userUid = received.data().fromUid;
+              userRelations[userUid] = {
+                relation: "Received Friend Request",
+                relationId: received.id,
+              };
+            });
+          }
+
+          /* Friend requests sent */
+          const sentRequestsQuery = await db
+            .collection("friendRequests")
+            .where("fromUid", "==", uid)
+            .get();
+          if (!sentRequestsQuery.empty) {
+            sentRequestsQuery.forEach((sent) => {
+              const userUid = sent.data().toUid;
+              userRelations[userUid] = {
+                relation: "Sent Friend Request",
+                relationId: sent.id,
+              };
+            });
+          }
+
+          /* Friendships */
+          const friendshipQuery1 = await db
+            .collection("friendships")
+            .where("uid1", "==", uid)
+            .get();
+          if (!friendshipQuery1.empty) {
+            friendshipQuery1.forEach((friend) => {
+              const userUid = friend.data().uid2;
+              userRelations[userUid] = {
+                relation: "Friends",
+                relationId: friend.id,
+              };
+            });
+          }
+
+          const friendshipQuery2 = await db
+            .collection("friendships")
+            .where("uid2", "==", uid)
+            .get();
+          if (!friendshipQuery2.empty) {
+            friendshipQuery2.forEach((friend) => {
+              const userUid = friend.data().uid1;
+              userRelations[userUid] = {
+                relation: "Friends",
+                relationId: friend.id,
+              };
+            });
+          }
+
           const users = [];
-          for (const uid of userIds) {
-            const userData = await getUser(uid);
+          for (const userUid of userIds) {
+            if (uid == userUid) continue;
+            const userData = await getUser(userUid);
             users.push({
-              uid,
+              userUid,
               displayName: userData.displayName,
               email: userData.email,
               profilePhotoUrl: userData.profilePhotoUrl,
+              relation: userRelations[userUid],
             });
           }
 
           res.status(200).json({ users });
         } catch (error) {
-          console.log("Error @UserController/getAllUsers: ", error.message);
+          console.log(
+            "Error @UserController/getAllUserRelations: ",
+            error.message
+          );
           return res
             .status(500)
             .json({ message: "Unable to update get all users" });
@@ -122,6 +188,7 @@ const UserController = (() => {
               uid: friendUid,
               name: friendData.displayName,
               startDate: friendship.data().startDate,
+              profilePhotoUrl: friendData.profilePhotoUrl,
             });
           }
 

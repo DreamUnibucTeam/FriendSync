@@ -69,6 +69,11 @@ const groupsStyles = StyleSheet.create({
     // alignItems: "center",
     // backgroundColor: "#fff",
   },
+  noGroups: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   header: {
     // display: "flex",
     // flexDirection: "row",

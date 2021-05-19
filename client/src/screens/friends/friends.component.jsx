@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import { View, Text, Platform, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Platform,
+  FlatList,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import styles from "./friends.styles";
+import moment from "moment";
 
 import FocusAwareStatusBar from "../../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -10,10 +18,11 @@ import { UserContext } from "../../context/UserContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import CustomText from "../../components/customText/customText.component";
-import { List, Divider } from "@ui-kitten/components";
+import { ListItem, Divider, Avatar, Button } from "@ui-kitten/components";
 
 const Friends = ({ navigation }) => {
   const { request, loading, error, REST_API_LINK } = useHttp();
+  const [loadingButton, setLoadingButton] = useState(null);
   const [friendsList, setFriendsList] = useState([]);
   const [user, _] = useContext(UserContext);
   const isFocused = useIsFocused();
@@ -29,7 +38,7 @@ const Friends = ({ navigation }) => {
           Authorization: `Bearer ${token}`,
         }
       );
-      // console.log(data.groups);
+      // console.log(data.friendships);
       setFriendsList(data.friendships);
     } catch (error) {
       console.log("Error @FriendsComponent/getFriends: ", error.message);
@@ -40,13 +49,64 @@ const Friends = ({ navigation }) => {
     isFocused && getFriends();
   }, [getFriends, isFocused]);
 
-  const renderFriendItem = ({ item }) => {
+  const removeFriend = async (key, relationId) => {
+    try {
+      setLoadingButton(key);
+      const token = await auth.currentUser.getIdToken();
+
+      const response = await request(
+        `${REST_API_LINK}/api/users/friendships/${relationId}`,
+        "DELETE",
+        null,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+      await getFriends();
+      setLoadingButton(null);
+      Alert.alert("Success", response.message);
+    } catch (error) {
+      console.log("Error @AddFriend/removeFriend: ", error.message);
+      setLoadingButton(null);
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  /* List items */
+  const userProfilePhoto = (profilePhotoUrl) => (
+    <Avatar source={{ uri: profilePhotoUrl }} />
+  );
+
+  const userButton = (item) => {
+    const key = item.uid;
+
     return (
-      <View>
-        <Text>{item.name}</Text>
-      </View>
+      <Button
+        size="small"
+        status="danger"
+        onPress={() => removeFriend(key, item.friendshipId)}
+        disabled={loadingButton == key}
+      >
+        {loadingButton == key ? (
+          <ActivityIndicator style={styles.loading} color="#fff" />
+        ) : (
+          "Remove"
+        )}
+      </Button>
     );
   };
+
+  const renderFriendItem = ({ item }) => (
+    <ListItem
+      title={`${item.name}`}
+      description={`Friends since ${moment(new Date(item.startDate)).format(
+        "LL"
+      )}`}
+      accessoryLeft={() => userProfilePhoto(item.profilePhotoUrl)}
+      accessoryRight={() => userButton(item)}
+      style={{ height: 80, paddingHorizontal: 30 }}
+    />
+  );
 
   return (
     <View style={styles.container}>
@@ -76,7 +136,8 @@ const Friends = ({ navigation }) => {
         <FlatList
           data={friendsList}
           keyExtractor={(item) => item.friendshipId}
-          renderItem={(item) => console.log("Ops")}
+          ItemSeparatorComponent={Divider}
+          renderItem={(item) => renderFriendItem(item)}
         />
       )}
     </View>

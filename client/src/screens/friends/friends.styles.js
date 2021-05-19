@@ -10,6 +10,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  loading: {
+    color: "#fff",
+    width: 10,
+  },
 });
 
 export default styles;
