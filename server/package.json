@@ -26,7 +26,8 @@
     "@octokit/core": "^3.4.0",
     "dotenv": "^8.5.1",
     "express": "^4.17.1",
-    "firebase-admin": "^9.6.0"
+    "firebase-admin": "^9.6.0",
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "concurrently": "^6.0.2",
