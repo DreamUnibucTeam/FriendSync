@@ -54,6 +54,11 @@ const styles = StyleSheet.create({
   listItem: {
     backgroundColor: "#f2f2f2",
   },
+  loading: {
+    justifyContent: "center",
+    color: "#fff",
+    width: 34,
+  },
 });
 
 export default styles;

@@ -2,11 +2,8 @@ import React, { useCallback, useEffect, useState, useContext } from "react";
 import {
   Text,
   View,
-  TextInput,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
   FlatList,
   Platform,
 } from "react-native";
@@ -17,6 +14,7 @@ import { useHttp } from "../../hooks/http.hook";
 import { UserContext } from "../../context/UserContext";
 import { auth } from "../../firebase/firebase";
 import Spinner from "react-native-loading-spinner-overlay";
+import CustomText from "../../components/customText/customText.component";
 
 import groupsStyles, {
   Container,
@@ -30,36 +28,13 @@ import groupsStyles, {
   MessageText,
   TextSection,
 } from "./groups.styles";
-import groupsData from "./groups.data";
-
-import Group from "../../components/group/group.component";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const Groups = ({ navigation }) => {
   const { request, loading, REST_API_LINK, error } = useHttp();
   const [groupList, setGroupList] = useState();
   const [user, setUser] = useContext(UserContext);
   const isFocused = useIsFocused();
-
-  const createGroup = async () => {
-    try {
-      const token = await auth.currentUser.getIdToken();
-      const data = await request(
-        `${REST_API_LINK}/api/groups/group`,
-        "POST",
-        {
-          uid: user.uid,
-          name: "Test Add Grup",
-        },
-        {
-          Authorization: `Bearer ${token}`,
-        }
-      );
-
-      await getGroups();
-    } catch (error) {
-      console.log("Error @GroupsComponent/createGroup: ", error.message);
-    }
-  };
 
   const getGroups = useCallback(async () => {
     try {
@@ -133,59 +108,27 @@ const Groups = ({ navigation }) => {
         textStyle={{ color: "#fff" }}
       />
       <Container>
-        <FlatList
-          data={groupList}
-          keyExtractor={(item) => item.groupId}
-          renderItem={(item) => renderGroupItem(item)}
-        />
+        {JSON.stringify(groupList) === JSON.stringify([]) ? (
+          <View style={groupsStyles.noGroups}>
+            <MaterialIcons name="group-add" size={100} color="black" />
+            <CustomText bold large>
+              You are not part of any groups yet
+            </CustomText>
+            <CustomText center>
+              Tap the + icon to create a new group or wait until someone add's
+              you to a group
+            </CustomText>
+          </View>
+        ) : (
+          <FlatList
+            data={groupList}
+            keyExtractor={(item) => item.groupId}
+            renderItem={(item) => renderGroupItem(item)}
+          />
+        )}
       </Container>
     </>
   );
 };
 
 export default Groups;
-
-{
-  //   <View style={groupsStyles.header}>
-  //   <Text> </Text>
-  //   <View style={groupsStyles.search}>
-  //     <TextInput style={groupsStyles.searchInput} />
-  //     <Icon
-  //       style={groupsStyles.searchIcon}
-  //       name="search"
-  //       type="font-awesome"
-  //     />
-  //   </View>
-  //   <Icon
-  //     style={groupsStyles.createGroup}
-  //     name="plus"
-  //     type="font-awesome"
-  //     onPress={createGroup}
-  //   />
-  // </View>
-  // <View style={groupsStyles.groupList}>
-  //   {groupList.map(({ groupId, name }) => (
-  //     <TouchableOpacity
-  //       key={groupId}
-  //       onPress={() =>
-  //         navigation.navigate("ChatStack", {
-  //           screen: "Chat",
-  //           params: {
-  //             id: groupId,
-  //             groupName: name,
-  //             groupPhotoUrl: user.profilePhotoUrl,
-  //           },
-  //         })
-  //       }
-  //     >
-  //       <Group
-  //         key={groupId}
-  //         groupName={name}
-  //         groupPhotoUrl={user.profilePhotoUrl}
-  //         lastMessage="IDK"
-  //       />
-  //       <Text>{groupId}</Text>
-  //     </TouchableOpacity>
-  //   ))}
-  // </View>
-}
