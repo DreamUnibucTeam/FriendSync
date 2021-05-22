@@ -9,13 +9,15 @@ import Groups from "../screens/groups/groups.component";
 import ChatStackScreens from "./ChatStack";
 import { Button } from "react-native-elements";
 
+import MeetingStackScreens from './MeetingStackScreens'
+
 const GroupStackScreens = ({ navigation }) => {
   const GroupStack = createStackNavigator();
 
   return (
     <GroupStack.Navigator headerMode="float">
       <GroupStack.Screen
-        name="Groups"
+        name="GroupList"
         component={Groups}
         options={{
           headerRight: () => (
@@ -42,6 +44,14 @@ const GroupStackScreens = ({ navigation }) => {
           title: "Create a new group",
           headerBackTitleVisible: false,
         })}
+      />
+      <GroupStack.Screen
+        name="MeetingStack"
+        component={MeetingStackScreens}
+        options={({ route }) => ({
+            title: route.params.meetingName,
+            headerBackTitleVisible: false,
+          })}
       />
       <GroupStack.Screen name="Map" component={Map} />
     </GroupStack.Navigator>

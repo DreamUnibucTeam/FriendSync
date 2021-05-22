@@ -153,7 +153,7 @@ const Groups = ({ navigation }) => {
             <FlatList
               data={groupList}
               keyExtractor={(item) => item.groupId}
-              renderItem={(item) => renderGroupItem(item)}
+              renderItem={renderGroupItem}
             />
           )}
         </Container>
