@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Text, View, TouchableOpacity, SafeAreaView } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  Platform,
+} from "react-native";
 import dummyMessages from "./chat.data";
 import { GiftedChat } from "react-native-gifted-chat";
 
+import FocusAwareStatusBar from "../../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
+import Spinner from "react-native-loading-spinner-overlay";
 import { renderBubble, scrollToBottomComponent } from "./chat.styles";
 
 const Chat = ({ navigation, route }) => {
@@ -30,17 +38,24 @@ const Chat = ({ navigation, route }) => {
   }, []);
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: 1,
-      }}
-      alwaysShowSend
-      renderBubble={renderBubble}
-      scrollToBottom
-      scrollToBottomComponent={scrollToBottomComponent}
-    />
+    <>
+      <FocusAwareStatusBar
+        barStyle={Platform.OS === "android" ? "light-content" : "dark-content"}
+        hidden={false}
+        backgroundColor={Platform.OS === "android" ? "#000" : ""}
+      />
+      <GiftedChat
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: 1,
+        }}
+        alwaysShowSend
+        renderBubble={renderBubble}
+        scrollToBottom
+        scrollToBottomComponent={scrollToBottomComponent}
+      />
+    </>
   );
 };
 

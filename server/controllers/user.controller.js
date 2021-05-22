@@ -394,6 +394,7 @@ const UserController = (() => {
                 name: groupSnapshot.data().name,
                 creationDate: groupSnapshot.data().creationDate,
                 groupPhotoUrl: groupSnapshot.data().groupPhotoUrl,
+                owner: groupSnapshot.data().owner,
               });
             } else {
               console.log("Warning @UserController/getGroups: Group not found");

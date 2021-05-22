@@ -50,10 +50,9 @@ const Home = ({ navigation }) => {
   }, [request]);
 
   useEffect(() => {
-    const interval = setInterval(getAllFriendRequests(), 5000);
+    isFocused && getAllFriendRequests();
     setFirstLoading(false);
-    return clearInterval(interval);
-  }, []);
+  }, [isFocused]);
 
   /* Functions for friend requests part */
   const acceptFriendRequest = async (key, relationId, userUid) => {

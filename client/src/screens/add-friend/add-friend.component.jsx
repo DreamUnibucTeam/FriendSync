@@ -46,7 +46,6 @@ const AddFriend = ({ navigation }) => {
         }
       );
       await getAllUsers();
-      filterResults(search);
       setLoadingButton(null);
       Alert.alert("Success", response.message);
     } catch (error) {
@@ -74,7 +73,6 @@ const AddFriend = ({ navigation }) => {
         }
       );
       await getAllUsers();
-      filterResults(search);
       setLoadingButton(null);
       Alert.alert("Success", response.message);
     } catch (error) {
@@ -97,7 +95,6 @@ const AddFriend = ({ navigation }) => {
         }
       );
       await getAllUsers();
-      filterResults(search);
       setLoadingButton(null);
       Alert.alert("Success", response.message);
     } catch (error) {
@@ -121,7 +118,6 @@ const AddFriend = ({ navigation }) => {
         }
       );
       await getAllUsers();
-      filterResults(search);
       setLoadingButton(null);
       Alert.alert("Success", response.message);
     } catch (error) {
@@ -133,8 +129,12 @@ const AddFriend = ({ navigation }) => {
 
   /* Search functions */
   useEffect(() => {
-    getAllUsers();
+    isFocused && getAllUsers();
   }, [isFocused]);
+
+  useEffect(() => {
+    filterResults(search);
+  }, [usersList]);
 
   const getAllUsers = useCallback(async () => {
     try {
@@ -180,7 +180,7 @@ const AddFriend = ({ navigation }) => {
       return (
         <Button
           size="small"
-          onPress={() => sendFriendRequest(key, item.userUid)}
+          onPress={async () => await sendFriendRequest(key, item.userUid)}
           disabled={loadingButton}
         >
           {loadingButton == key ? (
@@ -195,7 +195,9 @@ const AddFriend = ({ navigation }) => {
         <Button
           size="small"
           status="danger"
-          onPress={() => removeFriend(key, item.relation.relationId)}
+          onPress={async () =>
+            await removeFriend(key, item.relation.relationId)
+          }
           disabled={loadingButton}
         >
           {loadingButton == key ? (
@@ -212,8 +214,8 @@ const AddFriend = ({ navigation }) => {
             size="small"
             status="success"
             style={{ marginRight: 5 }}
-            onPress={() =>
-              acceptFriendRequest(
+            onPress={async () =>
+              await acceptFriendRequest(
                 key + "Accept",
                 item.relation.relationId,
                 item.userUid
@@ -230,8 +232,11 @@ const AddFriend = ({ navigation }) => {
           <Button
             size="small"
             status="danger"
-            onPress={() =>
-              rejectFriendRequest(key + "Reject", item.relation.relationId)
+            onPress={async () =>
+              await rejectFriendRequest(
+                key + "Reject",
+                item.relation.relationId
+              )
             }
             disabled={loadingButton}
           >
