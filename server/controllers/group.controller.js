@@ -98,6 +98,40 @@ const GroupController = (() => {
           return res.status(500).json({ message: error.message });
         }
       },
+
+      getAllMembers: async (req, res) => {
+        try {
+          const id = req.params.id;
+
+          const membersQuery = await db
+            .collection("belongsTo")
+            .where("groupId", "==", id)
+            .get();
+          const membersIds = [];
+          if (!membersQuery.empty) {
+            membersQuery.forEach((member) => {
+              membersIds.push(member.data().userUid);
+            });
+          }
+
+          const members = [];
+          for (const userId of membersIds) {
+            const userSnapshot = await db.collection("users").doc(userId).get();
+            if (userSnapshot.exists) {
+              members.push({
+                uid: userId,
+                displayName: userSnapshot.data().displayName,
+                profilePhotoUrl: userSnapshot.data().profilePhotoUrl,
+              });
+            }
+          }
+
+          return res.status(200).json({ members });
+        } catch (error) {
+          console.log("Error @GroupController/getAllMembers: ", error.message);
+          return res.status(500).json({ message: error.message });
+        }
+      },
     };
   };
 

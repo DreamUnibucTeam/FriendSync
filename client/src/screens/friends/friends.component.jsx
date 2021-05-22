@@ -9,9 +9,11 @@ import {
 } from "react-native";
 import styles from "./friends.styles";
 import moment from "moment";
+import { setIntervalAsync } from "set-interval-async/fixed";
+import { clearIntervalAsync } from "set-interval-async";
 
 import FocusAwareStatusBar from "../../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
-import Spinner from "react-native-loading-spinner-overlay";
+import LoadingPage from "../../components/loading-page/loading-page.component";
 import { auth } from "../../firebase/firebase";
 import { useHttp } from "../../hooks/http.hook";
 import { UserContext } from "../../context/UserContext";
@@ -22,10 +24,20 @@ import { ListItem, Divider, Avatar, Button } from "@ui-kitten/components";
 
 const Friends = ({ navigation }) => {
   const { request, loading, error, REST_API_LINK } = useHttp();
+  const [firstLoading, setFirstLoading] = useState(true);
   const [loadingButton, setLoadingButton] = useState(null);
   const [friendsList, setFriendsList] = useState([]);
   const [user, _] = useContext(UserContext);
   const isFocused = useIsFocused();
+
+  // useEffect(() => {
+  //   const interval = setIntervalAsync(getFriends, 5000);
+  //   return () => clearIntervalAsync(interval);
+  // }, []);
+
+  useEffect(() => {
+    isFocused && getFriends();
+  }, [isFocused]);
 
   const getFriends = useCallback(async () => {
     try {
@@ -40,14 +52,15 @@ const Friends = ({ navigation }) => {
       );
       // console.log(data.friendships);
       setFriendsList(data.friendships);
+      setFirstLoading(false);
     } catch (error) {
       console.log("Error @FriendsComponent/getFriends: ", error.message);
     }
   }, [request]);
 
-  useEffect(() => {
-    isFocused && getFriends();
-  }, [getFriends, isFocused]);
+  // useEffect(() => {
+  //   isFocused && getFriends();
+  // }, [getFriends, isFocused]);
 
   const removeFriend = async (key, relationId) => {
     try {
@@ -115,22 +128,22 @@ const Friends = ({ navigation }) => {
         hidden={false}
         backgroundColor={Platform.OS === "android" ? "#000" : ""}
       />
-      <Spinner
-        visible={loading}
-        textContent={"Loading friends..."}
-        textStyle={{ color: "#fff" }}
-      />
-      {!loading && JSON.stringify(friendsList) === JSON.stringify([]) ? (
+      {firstLoading ? (
+        <LoadingPage />
+      ) : !firstLoading &&
+        JSON.stringify(friendsList) === JSON.stringify([]) ? (
         <View style={styles.noFriends}>
           <MaterialCommunityIcons
             name="account-search"
             size={100}
             color="black"
           />
-          <CustomText bold large>
+          <CustomText bold large center>
             You don't have any friends yet
           </CustomText>
-          <CustomText>Tap the + icon to search and find new friends</CustomText>
+          <CustomText center>
+            Tap the + icon to search and find new friends
+          </CustomText>
         </View>
       ) : (
         <FlatList

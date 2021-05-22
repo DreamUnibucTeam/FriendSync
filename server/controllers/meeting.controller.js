@@ -21,7 +21,7 @@ const MeetingController = (() => {
             startInterval,
             endInterval,
             duration,
-            isScheduled: true,
+            isScheduled: false,
           });
 
           res

@@ -12,6 +12,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AppStackScreens from "./src/stacks/AppStackScreens";
 import { UserProvider } from "./src/context/UserContext";
 import { FirebaseProvider } from "./src/context/FirebaseContext";
+import { GroupProvider } from "./src/context/GroupContext";
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -28,9 +29,11 @@ const App = () => {
       <ApplicationProvider {...eva} theme={eva.light}>
         <FirebaseProvider>
           <UserProvider>
-            <NavigationContainer>
-              <AppStackScreens />
-            </NavigationContainer>
+            <GroupProvider>
+              <NavigationContainer>
+                <AppStackScreens />
+              </NavigationContainer>
+            </GroupProvider>
           </UserProvider>
         </FirebaseProvider>
       </ApplicationProvider>
