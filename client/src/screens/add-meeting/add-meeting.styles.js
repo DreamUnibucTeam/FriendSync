@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "#fff",
-    alignItems: "center",
+    // alignItems: "center",
   },
   main: {
     marginTop: 50,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 64,
     marginHorizontal: 32,
-    marginBottom: 23,
+    marginBottom: 10,
   },
   inputContainer: {
     marginBottom: 32,
@@ -48,6 +48,8 @@ const styles = StyleSheet.create({
     height: 48,
   },
   submitContainer: {
+    marginTop: 10,
+    marginBottom: 20,
     marginHorizontal: 32,
     height: 48,
     alignItems: "center",
@@ -58,6 +60,13 @@ const styles = StyleSheet.create({
   loading: {
     color: "#fff",
     width: 34,
+  },
+  calendarContainer: {
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  timePickerContainer: {
+    paddingLeft: 15,
   },
 });
 
