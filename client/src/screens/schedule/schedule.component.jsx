@@ -1,11 +1,11 @@
-import React from 'react'
-import { Text } from "react-native-elements"
+import React from "react";
+import { View, Text } from "react-native";
 
-const Schedule = ({ navigation }) => {
-    return (
-        <Text>
-            schedule
-        </Text>
-    )
-}
-export default Schedule
+const Schedule = ({ navigation, route }) => {
+  return (
+    <View>
+      <Text>schedule</Text>
+    </View>
+  );
+};
+export default Schedule;

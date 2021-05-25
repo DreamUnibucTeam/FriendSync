@@ -133,7 +133,7 @@ const AddFriend = ({ navigation }) => {
   }, [isFocused]);
 
   useEffect(() => {
-    filterResults(search);
+    showResults(search);
   }, [usersList]);
 
   const getAllUsers = useCallback(async () => {

@@ -5,7 +5,8 @@ import Chat from "../screens/chat/chat.component";
 import Map from "../screens/map/map.component";
 import GroupMembersStackScreens from "./GroupMembersStackScreens";
 import FocusAwareStatusBar from "../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
-import Meetings from "../screens/meetings/meetings.component"
+import Meetings from "../screens/meetings/meetings.component";
+import GroupMeetingsStackScreens from "./GroupMeetingsStackScreens";
 
 const ChatStackScreens = () => {
   const ChatStack = createMaterialTopTabNavigator();
@@ -19,7 +20,10 @@ const ChatStackScreens = () => {
       />
       <ChatStack.Navigator>
         <ChatStack.Screen name="Chat" component={Chat} />
-        <ChatStack.Screen name="Meetings" component={Meetings} />
+        <ChatStack.Screen
+          name="Meetings"
+          component={GroupMeetingsStackScreens}
+        />
         <ChatStack.Screen
           name="Settings"
           component={GroupMembersStackScreens}
