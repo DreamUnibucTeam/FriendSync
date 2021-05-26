@@ -79,6 +79,7 @@ const Groups = ({ navigation }) => {
         id: null,
         owner: null,
         groupPhotoUrl: "default",
+        meeting: null,
       });
     isFocused && getGroups();
   }, [getGroups, isFocused]);
@@ -93,6 +94,7 @@ const Groups = ({ navigation }) => {
           name: item.name,
           groupPhotoUrl: item.groupPhotoUrl,
           owner: item.owner,
+          meeting: null,
         });
         navigation.navigate("ChatStack", {
           screen: "Chat",
