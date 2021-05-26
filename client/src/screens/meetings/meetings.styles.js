@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     marginHorizontal: 50,
-    marginVertical: 10,
+    marginTop: 10,
+    marginBottom: 20,
   },
 });
 

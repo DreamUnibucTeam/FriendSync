@@ -19,6 +19,7 @@ import styles from "./meetings.styles";
 import { auth } from "../../firebase/firebase";
 
 const Meetings = ({ navigation }) => {
+  const [firstLoading, setFirstLoading] = useState(true);
   const [meetings, setMeetings] = useState([]);
   const [group, setGroup] = useContext(GroupContext);
   const { request, loading, error, REST_API_LINK } = useHttp();
@@ -26,7 +27,7 @@ const Meetings = ({ navigation }) => {
 
   useEffect(() => {
     isFocused && getAllMeetings();
-    // TODO: Add the meetings to context when selecting and scoate-o de acolo if no
+    isFocused && setGroup({ ...group, meeting: null });
   }, [isFocused]);
 
   const getAllMeetings = useCallback(async () => {
@@ -43,6 +44,7 @@ const Meetings = ({ navigation }) => {
         }
       );
       setMeetings(response.meetings);
+      setFirstLoading(false);
     } catch (error) {
       console.log("Error @Meetings/getAllMeetings: ");
     }
@@ -50,7 +52,9 @@ const Meetings = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {JSON.stringify(meetings) === JSON.stringify([]) ? (
+      {firstLoading ? (
+        <LoadingPage />
+      ) : JSON.stringify(meetings) === JSON.stringify([]) ? (
         <View style={styles.noMeetings}>
           <MaterialIcons name="park" size={100} color="black" />
           <CustomText bold large center>
@@ -64,18 +68,22 @@ const Meetings = ({ navigation }) => {
       ) : (
         <FlatList
           data={meetings}
-          keyExtractor={(item) => item.meetingId.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <CustomListItem
-              name={item.meetingName}
+              name={item.name}
               onPress={() => {
-                navigation.navigate("MeetingStack", {
-                  screen: "Schedule",
-                  params: {
-                    id: item.meetingId.toString(),
-                    meetingName: item.meetingName,
-                  },
-                });
+                setGroup({
+                  ...group,
+                  meeting: item,
+                }),
+                  navigation.navigate("MeetingStack", {
+                    screen: "Schedule",
+                    params: {
+                      id: item.id,
+                      meetingName: item.name,
+                    },
+                  });
               }}
             />
           )}

@@ -9,6 +9,7 @@ const GroupProvider = (props) => {
     name: "",
     groupPhotoUrl: "default",
     owner: null,
+    meeting: null,
   });
 
   return (

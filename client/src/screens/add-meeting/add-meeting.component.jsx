@@ -21,8 +21,6 @@ import { AntDesign } from "@expo/vector-icons";
 import styles from "./add-meeting.styles";
 
 import CustomText from "../../components/customText/customText.component";
-import FocusAwareStatusBar from "../../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
-import { FirebaseContext } from "../../context/FirebaseContext";
 import { auth } from "../../firebase/firebase";
 import { useHttp } from "../../hooks/http.hook";
 import { GroupContext } from "../../context/GroupContext";
@@ -36,11 +34,18 @@ const AddMeeting = ({ navigation }) => {
   );
   const [show, setShow] = useState(Platform.OS === "ios");
   const [range, setRange] = useState({});
+  const [realRange, setRealRange] = useState({});
   const [group, setGroup] = useContext(GroupContext);
   const { request, loading, error, REST_API_LINK } = useHttp();
 
   const createMeeting = async () => {
     try {
+      if (JSON.stringify(realRange) === JSON.stringify({})) {
+        throw new Error("Choose at least one day in the calendar to continue");
+      }
+
+      const hours = parseInt(duration.split(":")[0]);
+      const minutes = parseInt(duration.split(":")[1]);
       const groupId = group.id;
       const token = await auth.currentUser.getIdToken();
       const response = await request(
@@ -49,26 +54,45 @@ const AddMeeting = ({ navigation }) => {
         {
           name,
           groupId,
-          startInterval,
-          endInterval,
-          duration,
+          startInterval: moment(realRange.startDate).unix(),
+          endInterval: moment(realRange.endDate).unix(),
+          duration: {
+            hours,
+            minutes,
+          },
         },
         {
           Authorization: `Bearer ${token}`,
         }
       );
-      Alert.alert(response.message);
-      navigation.navigate("Meetings");
+      Alert.alert("Success", response.message);
+      navigation.navigate("GroupMeetings");
     } catch (error) {
       console.log("Error @AddMeeting/createMeeting: ", error.message);
-      Alert.alert(error.message);
+      Alert.alert("Error", error.message);
     }
+  };
+
+  const selectedRange = (nextRange) => {
+    setRange(nextRange);
+    const newEndDate =
+      nextRange.endDate === null
+        ? new Date(moment(nextRange.startDate).add({ days: 1 }))
+        : new Date(moment(nextRange.endDate).add({ days: 1 }));
+    setRealRange({ ...nextRange, endDate: newEndDate });
+
+    // console.log({
+    //   ...nextRange,
+    //   endDate:
+    //     nextRange.endDate === null
+    //       ? new Date(moment(nextRange.startDate).add({ days: 1 }))
+    //       : new Date(moment(nextRange.endDate).add({ days: 1 })),
+    // });
   };
 
   const selectDuration = (time) => {
     setShow(Platform.OS === "ios");
     const durata = time.toISOString().split("T")[1].substring(0, 5);
-    // console.log(durata);
     setTimePickerValue(time);
     setDuration(durata);
   };
@@ -105,9 +129,9 @@ const AddMeeting = ({ navigation }) => {
               <View style={styles.calendarContainer}>
                 <RangeCalendar
                   range={range}
+                  min={new Date()}
                   onSelect={(nextRange) => {
-                    setRange(nextRange);
-                    console.log(nextRange);
+                    selectedRange(nextRange);
                   }}
                 />
               </View>

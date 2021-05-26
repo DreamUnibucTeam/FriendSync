@@ -10,52 +10,60 @@ import ChatStackScreens from "./ChatStack";
 import { Button } from "react-native-elements";
 
 import MeetingStackScreens from "./MeetingStackScreens";
+import FocusAwareStatusBar from "../components/FocusAwareStatusBar/FocusAwareStatusBar.component";
 
 const GroupStackScreens = ({ navigation }) => {
   const GroupStack = createStackNavigator();
 
   return (
-    <GroupStack.Navigator headerMode="float">
-      <GroupStack.Screen
-        name="GroupList"
-        component={Groups}
-        options={{
-          headerTitle: "Groups",
-          headerRight: () => (
-            <Button
-              onPress={() => navigation.navigate("AddGroup")}
-              icon={<AntDesign name="plus" size={24} color="#0066ff" />}
-              type="clear"
-            />
-          ),
-        }}
+    <>
+      <FocusAwareStatusBar
+        barStyle={Platform.OS === "android" ? "light-content" : "dark-content"}
+        hidden={false}
+        backgroundColor={Platform.OS === "android" ? "#000" : ""}
       />
-      <GroupStack.Screen
-        name="ChatStack"
-        component={ChatStackScreens}
-        options={({ route }) => ({
-          title: route.params.params.groupName,
-          headerBackTitleVisible: false,
-        })}
-      />
-      <GroupStack.Screen
-        name="AddGroup"
-        component={AddGroup}
-        options={({ route }) => ({
-          title: "Create a new group",
-          headerBackTitleVisible: false,
-        })}
-      />
-      <GroupStack.Screen
-        name="MeetingStack"
-        component={MeetingStackScreens}
-        options={({ route }) => ({
-          title: route.params.meetingName,
-          headerBackTitleVisible: false,
-        })}
-      />
-      <GroupStack.Screen name="Map" component={Map} />
-    </GroupStack.Navigator>
+      <GroupStack.Navigator headerMode="float">
+        <GroupStack.Screen
+          name="GroupList"
+          component={Groups}
+          options={{
+            headerTitle: "Groups",
+            headerRight: () => (
+              <Button
+                onPress={() => navigation.navigate("AddGroup")}
+                icon={<AntDesign name="plus" size={24} color="#0066ff" />}
+                type="clear"
+              />
+            ),
+          }}
+        />
+        <GroupStack.Screen
+          name="ChatStack"
+          component={ChatStackScreens}
+          options={({ route }) => ({
+            title: route.params.params.groupName,
+            headerBackTitleVisible: false,
+          })}
+        />
+        <GroupStack.Screen
+          name="AddGroup"
+          component={AddGroup}
+          options={({ route }) => ({
+            title: "Create a new group",
+            headerBackTitleVisible: false,
+          })}
+        />
+        <GroupStack.Screen
+          name="MeetingStack"
+          component={MeetingStackScreens}
+          options={({ route }) => ({
+            title: route.params.params.meetingName,
+            headerBackTitleVisible: false,
+          })}
+        />
+        <GroupStack.Screen name="Map" component={Map} />
+      </GroupStack.Navigator>
+    </>
   );
 };
 
