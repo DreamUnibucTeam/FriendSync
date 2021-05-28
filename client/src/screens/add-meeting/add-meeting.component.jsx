@@ -19,6 +19,7 @@ import moment from "moment";
 import { AntDesign } from "@expo/vector-icons";
 
 import styles from "./add-meeting.styles";
+import defaultActivities from "./default-activities.data";
 
 import CustomText from "../../components/customText/customText.component";
 import { auth } from "../../firebase/firebase";
@@ -65,10 +66,30 @@ const AddMeeting = ({ navigation }) => {
           Authorization: `Bearer ${token}`,
         }
       );
+      for (const activity of defaultActivities) {
+        await createActivity(activity.name, response.meetingId);
+      }
       Alert.alert("Success", response.message);
       navigation.navigate("GroupMeetings");
     } catch (error) {
       console.log("Error @AddMeeting/createMeeting: ", error.message);
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  const createActivity = async (name, meetingId) => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/activity`,
+        "POST",
+        { name, meetingId },
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+    } catch (error) {
+      console.log("Error @AddMeeting/createActivity: ", error.message);
       Alert.alert("Error", error.message);
     }
   };

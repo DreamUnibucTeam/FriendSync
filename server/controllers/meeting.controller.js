@@ -22,11 +22,14 @@ const MeetingController = (() => {
             endInterval,
             duration,
             isScheduled: false,
+            voted: [],
           });
 
-          res
-            .status(200)
-            .json({ message: "Meeting has been successfully created" });
+          const meetingId = result.id;
+          res.status(200).json({
+            message: "Meeting has been successfully created",
+            meetingId,
+          });
         } catch (error) {
           console.log(
             "Error @MeetingsController/createMeeting: ",
@@ -121,9 +124,11 @@ const MeetingController = (() => {
             votes: [],
           });
 
-          res
-            .status(200)
-            .json({ message: "Activity has been successfully created" });
+          const activityId = result.id;
+          res.status(200).json({
+            message: "Activity has been successfully created",
+            activityId,
+          });
         } catch (error) {
           console.log(
             "Error @MeetingsController/createActivity: ",
@@ -148,11 +153,11 @@ const MeetingController = (() => {
               });
             }
 
-            const { newVotes } = activitySnapshot.data();
-            newVotes.push(uid);
+            const votes = [...activitySnapshot.data().votes];
+            const votesNumber = activitySnapshot.data().votesNumber;
             const result = await activityRef.update({
               votesNumber: votesNumber + 1,
-              votes: newVotes,
+              votes: [...votes, uid],
             });
 
             return res

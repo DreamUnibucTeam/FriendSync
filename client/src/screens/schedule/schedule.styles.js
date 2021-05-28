@@ -82,6 +82,55 @@ const styles = StyleSheet.create({
     color: "#fff",
     width: 34,
   },
+  activityList: {
+    maxHeight: 250,
+    // height: 250,
+    marginBottom: 10,
+    paddingHorizontal: 20,
+  },
+  input: {
+    marginTop: 20,
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  inputContainer: {
+    marginBottom: 32,
+  },
+  inputTitle: {
+    color: "#8e93a1",
+    fontSize: 12,
+    textTransform: "uppercase",
+    fontWeight: "300",
+  },
+  inputField: {
+    borderBottomColor: "#8e93a1",
+    borderBottomWidth: 0.5,
+    height: 48,
+  },
+  pollContainer: {
+    width: "100%",
+    height: 20,
+  },
+  pollLine: {
+    width: "100%",
+    height: 5,
+    backgroundColor: "#3386FF",
+    borderRadius: 100,
+  },
+  activitySelector: {
+    maxHeight: 400,
+    paddingTop: 20,
+    paddingHorizontal: 10,
+  },
+  activityButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  selectButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 20,
+  },
 });
 
 export default styles;
