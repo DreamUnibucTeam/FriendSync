@@ -329,7 +329,7 @@ const UserController = (() => {
           if (adminSnapshot.exists && adminSnapshot.data().owner === adminUid) {
             const result = await db
               .collection("belongsTo")
-              .add({ userUid, groupId, isAdmin: false, schedule: null });
+              .add({ userUid, groupId, isAdmin: false, schedule: [] });
             return res.status(200).json({ message: "User added to group" });
           } else {
             return res
@@ -350,7 +350,7 @@ const UserController = (() => {
             .where("userUid", "==", userUid)
             .where("groupId", "==", groupId);
           const belongsToSnapshot = await belongsToRef.get();
-          console.log(belongsToSnapshot.size);
+          // console.log(belongsToSnapshot.size);
           if (!belongsToSnapshot.empty) {
             const userDocs = belongsToSnapshot.docs[0];
             const userRef = userDocs.ref;
@@ -364,6 +364,30 @@ const UserController = (() => {
           }
         } catch (error) {
           console.log("Error @UserController/changeSchedule: ", error.message);
+          return res.status(500).json({ message: error.message });
+        }
+      },
+
+      getSchedule: async (req, res) => {
+        const uid = req.params.uid;
+        const groupId = req.params.groupId;
+        try {
+          const belongsToRef = db
+            .collection("belongsTo")
+            .where("userUid", "==", uid)
+            .where("groupId", "==", groupId);
+          const belongsToSnapshot = await belongsToRef.get();
+          // console.log(belongsToSnapshot.size);
+          if (!belongsToSnapshot.empty) {
+            const userDocs = belongsToSnapshot.docs[0];
+            const schedule = userDocs.data().schedule;
+            return res.status(200).json({ schedule });
+          } else {
+            console.log("Group or user does not exist");
+            return res.status(500).json({ message: "Group or user not found" });
+          }
+        } catch (error) {
+          console.log("Error @UserController/getSchedule: ", error.message);
           return res.status(500).json({ message: error.message });
         }
       },

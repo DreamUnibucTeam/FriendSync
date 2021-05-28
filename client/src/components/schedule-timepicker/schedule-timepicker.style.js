@@ -1,17 +1,8 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  headerText: {
-    marginVertical: 40,
-    marginHorizontal: 50,
-  },
   scheduleContainer: {
+    flex: 1,
     maxHeight: 750,
     borderRadius: 10,
     marginVertical: 20,
@@ -25,7 +16,7 @@ const styles = StyleSheet.create({
   scheduleContent: {
     backgroundColor: "#fff", //"#f2f2f2",
     // height: 300,
-    maxHeight: 650,
+    maxHeight: 700,
     marginHorizontal: 8,
     borderRadius: 5,
     paddingVertical: 10,
@@ -43,9 +34,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   scheduleList: {
-    maxHeight: 250,
-    // height: 250,
-    marginBottom: 10,
+    maxHeight: 300,
+    // height: 300,
   },
   scheduleSelector: {
     // flex: 1,
@@ -77,10 +67,6 @@ const styles = StyleSheet.create({
   timePickers: {
     flexDirection: "row",
     justifyContent: "center",
-  },
-  loading: {
-    color: "#fff",
-    width: 34,
   },
 });
 
