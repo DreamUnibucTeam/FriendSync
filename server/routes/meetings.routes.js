@@ -18,6 +18,11 @@ router.put("/meeting/schedule/:id", controller.getBestInterval);
 
 router.put("/meeting/location/:id", controller.setLocation);
 
+router.get(
+  "/meeting/votingstatus/:groupId/:meetingId",
+  controller.getVotingStatus
+);
+
 /* Activity routers */
 router.get("/activity/:id", controller.getAllActivities);
 

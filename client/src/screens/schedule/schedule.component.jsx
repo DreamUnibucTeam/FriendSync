@@ -50,26 +50,32 @@ const Schedule = ({ navigation, route }) => {
   const { request, loading, error, REST_API_LINK } = useHttp();
   const isFocused = useIsFocused();
   const [fullLoading, setFullLoading] = useState(true);
-  const [loadingScheduleSubmit, setLoadingScheduleSubmit] = useState(false);
 
+  /* Schedule states */
+  const [loadingScheduleSubmit, setLoadingScheduleSubmit] = useState(false);
   const [schedule, setSchedule] = useState([]);
   const [range, setRange] = useState({
     startDate: new Date(),
     endDate: new Date(moment().add({ hours: 2 })),
   });
+
+  /* Activity states */
   const [activities, setActivities] = useState([]);
   const [checked, setChecked] = useState({});
   const [activityName, setActivityName] = useState("");
   const [loadingAddActivity, setLoadingAddActivity] = useState(false);
   const [loadingActivitySubmit, setLoadingActivitySubmit] = useState(false);
   const [totalVotes, setTotalVotes] = useState(0);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [voters, setVoters] = useState([]);
 
   /* Backend Requests */
   useEffect(() => {
     isFocused && setMeeting({ ...group.meeting });
     isFocused && getUserSchedule();
     isFocused && getMeetingActivities();
-    setFullLoading(false);
+    isFocused && getVotingStatus();
   }, [isFocused]);
 
   const getUserSchedule = useCallback(async () => {
@@ -146,6 +152,30 @@ const Schedule = ({ navigation, route }) => {
     }
   }, []);
 
+  const getVotingStatus = useCallback(async () => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const uid = auth.currentUser.uid;
+      const groupId = group.id;
+      const meetingId = group.meeting.id;
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/meeting/votingstatus/${groupId}/${meetingId}`,
+        "GET",
+        null,
+        {
+          Authorizaton: `Bearer ${token}`,
+        }
+      );
+      setTotalMembers(response.totalMembers);
+      setVoters(response.voters);
+      setHasVoted(response.voters.includes(uid));
+    } catch (error) {
+      console.log("Error @Schedule/getVotingStatus: ", error.message);
+      Alert.alert("Error", error.message);
+    }
+    setFullLoading(false);
+  }, []);
+
   const addActivity = async () => {
     setLoadingAddActivity(true);
     try {
@@ -197,6 +227,9 @@ const Schedule = ({ navigation, route }) => {
           .doc(meeting.id)
           .update({ voted: [...voted, uid] });
       }
+
+      await getMeetingActivities();
+      await getVotingStatus();
       Alert.alert("Success", "You have successfully submitted your votes");
     } catch (error) {
       console.log("Error @Schedule/submitVotes: ", error.message);
@@ -275,12 +308,17 @@ const Schedule = ({ navigation, route }) => {
       <CheckBox
         checked={checked[item.id]}
         onChange={(newCheck) => selectOption(item, newCheck)}
+        disabled={hasVoted}
         style={{ height: 30, marginBottom: 0, marginTop: 20 }}
       >
         {item.name}
       </CheckBox>
       <PollItem
-        value={Math.round((item.votesNumber * 10000) / totalVotes) / 100}
+        value={
+          totalVotes === 0
+            ? 0
+            : Math.round((item.votesNumber * 10000) / totalVotes) / 100
+        }
       />
     </View>
   );
@@ -417,6 +455,7 @@ const Schedule = ({ navigation, route }) => {
               <View style={styles.scheduleButtonsContainer}>
                 <Button
                   status="warning"
+                  disabled={hasVoted}
                   style={styles.scheduleButton}
                   onPress={addActivity}
                 >
@@ -427,11 +466,12 @@ const Schedule = ({ navigation, route }) => {
                       style={styles.loading}
                     />
                   ) : (
-                    "Add interval"
+                    "Add activity"
                   )}
                 </Button>
                 <Button
                   status="success"
+                  disabled={hasVoted}
                   style={styles.scheduleButton}
                   onPress={submitVotes}
                 >
@@ -441,8 +481,10 @@ const Schedule = ({ navigation, route }) => {
                       color="#fff"
                       style={styles.loading}
                     />
-                  ) : (
+                  ) : !hasVoted ? (
                     "Vote"
+                  ) : (
+                    "Already voted"
                   )}
                 </Button>
               </View>

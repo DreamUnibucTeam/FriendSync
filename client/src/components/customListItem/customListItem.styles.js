@@ -1,7 +1,6 @@
 import { StyleSheet, Platform } from "react-native";
 import styled from "styled-components";
 
-
 export const Card = styled.TouchableOpacity`
   width: 100%;
 `;
@@ -14,11 +13,12 @@ export const ItemInfo = styled.View`
 export const ItemImgWrapper = styled.View`
   padding-top: 15px;
   padding-bottom: 15px;
+  padding-right: 10px;
 `;
 
 export const ItemImg = styled.Image`
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   border-radius: 25px;
 `;
 

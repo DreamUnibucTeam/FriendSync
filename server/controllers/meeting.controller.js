@@ -209,6 +209,38 @@ const MeetingController = (() => {
         }
       },
 
+      getVotingStatus: async (req, res) => {
+        try {
+          const groupId = req.params.groupId;
+          const meetingId = req.params.meetingId;
+
+          const groupQuery = await db
+            .collection("belongsTo")
+            .where("groupId", "==", groupId)
+            .get();
+          const meetingSnap = await db
+            .collection("meetings")
+            .doc(meetingId)
+            .get();
+
+          if (!groupQuery.empty && meetingSnap.exists) {
+            const totalMembers = groupQuery.size;
+            const totalVoters = meetingSnap.data().voted.length;
+            const voters = meetingSnap.data().voted;
+            return res.status(200).json({ totalMembers, totalVoters, voters });
+          }
+          return res.status(500).json({
+            message: "Group or meeting does not exist or has been deleted",
+          });
+        } catch (error) {
+          console.log(
+            "Error @MeetingsController/getVotingStatus: ",
+            error.message
+          );
+          res.status(500).json({ message: error.message });
+        }
+      },
+
       /* Algoritmul de scheduling */
       getBestInterval: async (req, res) => {
         try {
