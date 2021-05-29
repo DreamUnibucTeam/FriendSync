@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, Platform } from "react-native";
 import moment from "moment";
 import { auth } from "../../firebase/firebase";
 import { useHttp } from "../../hooks/http.hook";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const ModalTimepicker = ({
   showDate,
   setShowDate,
-  // selectedDate,
-  // setSelectedDate,
+  setIsScheduled,
   setLoadingScheduleMeeting,
   meeting,
 }) => {
@@ -43,13 +43,13 @@ const ModalTimepicker = ({
     );
   }, []);
 
-  const adminScheduleMeeting = async () => {
+  const adminScheduleMeeting = async (date) => {
     setLoadingScheduleMeeting(true);
     const uid = auth.currentUser.uid;
-    console.log(selectedDate);
+    // console.log(date);
     const interval = [
-      moment(selectedDate).valueOf(),
-      moment(selectedDate)
+      moment(date).valueOf(),
+      moment(date)
         .add({
           hours: meeting.duration.hours,
           minutes: meeting.duration.minutes,
@@ -69,6 +69,7 @@ const ModalTimepicker = ({
         }
       );
       Alert.alert("Succes", response.message);
+      setIsScheduled(true);
     } catch (error) {
       console.log("Error @Schedule/adminScheduleMeeting: ", error.message);
       Alert.alert("Error", error.message);
@@ -79,15 +80,16 @@ const ModalTimepicker = ({
   const handleConfirmDate = (date) => {
     setShowDate(false);
     setSelectedDate(date);
-    console.log(date);
+    // console.log(date);
     setTimeout(() => setShowTime(true), 1000);
   };
 
   const handleConfirmTime = async (date) => {
     try {
+      // console.log(date);
       setShowTime(false);
       setSelectedDate(date);
-      await adminScheduleMeeting();
+      await adminScheduleMeeting(date);
     } catch (error) {
       console.log("Error @ModalTimepicker/handleConfirmTime: ", error.message);
       Alert.alert("Error", error.meessage);
@@ -107,7 +109,7 @@ const ModalTimepicker = ({
     );
   };
 
-  return (
+  return Platform.OS === "ios" ? (
     <View>
       <DateTimePickerModal
         isVisible={showDate}
@@ -121,6 +123,7 @@ const ModalTimepicker = ({
       />
 
       <DateTimePickerModal
+        date={selectedDate}
         minimumDate={minDate}
         maximumDate={maxDate}
         is24Hour={true}
@@ -130,6 +133,33 @@ const ModalTimepicker = ({
         onConfirm={async (date) => await handleConfirmTime(date)}
         onCancel={hideDatePicker}
       />
+    </View>
+  ) : (
+    <View>
+      {showDate && (
+        <DateTimePicker
+          onTouchCancel={hideDatePicker}
+          minimumDate={minDate}
+          maximumDate={maxDate}
+          is24Hour={true}
+          value={selectedDate}
+          mode="date"
+          onChange={(event, date) => handleConfirmDate(date)}
+          display="spinner"
+        />
+      )}
+      {showTime && (
+        <DateTimePicker
+          onTouchCancel={hideDatePicker}
+          minimumDate={minDate}
+          maximumDate={maxDate}
+          is24Hour={true}
+          value={selectedDate}
+          mode="time"
+          onChange={async (event, date) => await handleConfirmTime(date)}
+          display="spinner"
+        />
+      )}
     </View>
   );
 };

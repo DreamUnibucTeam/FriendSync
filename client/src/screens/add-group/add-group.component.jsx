@@ -100,7 +100,7 @@ const AddGroup = ({ navigation }) => {
       setName("");
       setGroupPhoto("");
       setLoadingSubmit(false);
-      navigation.navigate("Groups");
+      navigation.navigate("GroupList");
     } catch (error) {
       setLoadingSubmit(false);
       console.log("Error @AddGroup/createGroup: ", error.message);

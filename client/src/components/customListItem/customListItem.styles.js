@@ -14,6 +14,7 @@ export const ItemImgWrapper = styled.View`
   padding-top: 15px;
   padding-bottom: 15px;
   padding-right: 10px;
+  padding-left: 20px;
 `;
 
 export const ItemImg = styled.Image`

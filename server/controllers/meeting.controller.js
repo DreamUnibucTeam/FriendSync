@@ -39,6 +39,55 @@ const MeetingController = (() => {
         }
       },
 
+      getUserScheduledMettings: async (req, res) => {
+        try {
+          const uid = req.params.uid;
+          const groupsQuery = await db
+            .collection("belongsTo")
+            .where("userUid", "==", uid)
+            .get();
+          const groupsIds = [];
+          if (!groupsQuery.empty) {
+            groupsQuery.forEach((group) => {
+              groupsIds.push(group.data().groupId);
+            });
+          }
+
+          const meetings = [];
+          for (const groupId of groupsIds) {
+            const groupSnap = await db.collection("groups").doc(groupId).get();
+            if (!groupSnap.exists)
+              return res
+                .status(500)
+                .json({ message: "Group does not exist or has been deleted" });
+
+            const meetingsQuery = await db
+              .collection("meetings")
+              .where("groupId", "==", groupId)
+              .get();
+            if (!meetingsQuery.empty) {
+              meetingsQuery.forEach((meeting) => {
+                if (meeting.data().isScheduled) {
+                  meetings.push({
+                    id: meeting.id,
+                    ...meeting.data(),
+                    groupName: groupSnap.data().name,
+                  });
+                }
+              });
+            }
+          }
+
+          res.status(200).json({ meetings });
+        } catch (error) {
+          console.log(
+            "Error @MeetingsController/getUserScheduledMettings: ",
+            error.message
+          );
+          res.status(500).json({ message: error.message });
+        }
+      },
+
       getAllMeetings: async (req, res) => {
         try {
           const id = req.params.id;
@@ -441,6 +490,59 @@ const MeetingController = (() => {
             .json({ message: "Meeting location has been succesfully set" });
         } catch (error) {
           console.log("Error @MeetingsController/setLocation: ", error.message);
+          res.status(500).json({ message: error.message });
+        }
+      },
+
+      selectActivity: async (req, res) => {
+        try {
+          const meetingId = req.params.id;
+          const activitiesQuery = await db
+            .collection("activities")
+            .where("meetingId", "==", meetingId)
+            .get();
+          if (activitiesQuery.empty) {
+            return res.status(500).json({
+              message: "There are no proposed activities for your meeting",
+            });
+          }
+
+          let topVotedActivities = [];
+          let topVotes = -1;
+          activitiesQuery.forEach((activity) => {
+            if (activity.data().votesNumber > topVotes) {
+              topVotes = activity.data().votesNumber;
+              topVotedActivities = [
+                { id: activity.id, name: activity.data().name },
+              ];
+            } else if (activity.data().votesNumber === topVotes) {
+              topVotedActivities.push({
+                id: activity.id,
+                name: activity.data().name,
+              });
+            }
+          });
+
+          let selected = null;
+          if (topVotedActivities.length === 1) {
+            selected = topVotedActivities[0];
+          } else {
+            const idx = Math.floor(Math.random() * topVotedActivities.length);
+            selected = topVotedActivities[idx];
+          }
+
+          const result = await db
+            .collection("meetings")
+            .doc(meetingId)
+            .update({ activity: selected });
+          res
+            .status(200)
+            .json({ message: "The activity has been selected successfully" });
+        } catch (error) {
+          console.log(
+            "Error @MeetingsController/selectActivity: ",
+            error.message
+          );
           res.status(500).json({ message: error.message });
         }
       },

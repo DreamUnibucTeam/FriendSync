@@ -41,6 +41,11 @@ import styles from "./schedule.styles";
 const Schedule = ({ navigation, route }) => {
   const [group, setGroup] = useContext(GroupContext);
   const [meeting, setMeeting] = useState({
+    activity: {
+      name: "Default",
+    },
+    time: [0, 1],
+    isScheduled: false,
     startInterval: new Date(),
     endInterval: new Date(moment().add({ days: 1 }).valueOf()),
     duration: {
@@ -72,8 +77,8 @@ const Schedule = ({ navigation, route }) => {
   const [voters, setVoters] = useState([]);
   const [loadingScheduleMeeting, setLoadingScheduleMeeting] = useState(false);
   const [loadingRemoveMeeting, setLoadingRemoveMeeting] = useState(false);
-  const [adminsPick, setAdminsPick] = useState(new Date());
   const [showModalPicker, setShowModalPicker] = useState(false);
+  const [isScheduled, setIsScheduled] = useState(false);
 
   /* Backend Requests */
   useEffect(() => {
@@ -82,6 +87,33 @@ const Schedule = ({ navigation, route }) => {
     isFocused && getMeetingActivities();
     isFocused && getVotingStatus();
   }, [isFocused]);
+
+  useEffect(() => {
+    isScheduled && updateMeeting();
+  }, [isScheduled]);
+
+  const updateMeeting = useCallback(async () => {
+    setFullLoading(true);
+    try {
+      const uid = auth.currentUser.uid;
+      const token = await auth.currentUser.getIdToken();
+      const meetingId = group.meeting.id;
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/meeting/${meetingId}`,
+        "GET",
+        null,
+        {
+          Authorizaton: `Bearer ${token}`,
+        }
+      );
+      setGroup({ ...group, meeting: response.meeting });
+      setMeeting(response.meeting);
+    } catch (error) {
+      console.log("Error @Schedule/updateMeeting", error.message);
+      Alert.alert("Error", error.message);
+    }
+    setFullLoading(false);
+  }, []);
 
   const getUserSchedule = useCallback(async () => {
     try {
@@ -318,6 +350,15 @@ const Schedule = ({ navigation, route }) => {
       const meetingId = group.meeting.id;
       const token = await auth.currentUser.getIdToken();
 
+      const setActivResponse = await request(
+        `${REST_API_LINK}/api/meetings/meeting/activity/${meetingId}`,
+        "PUT",
+        null,
+        {
+          Authorizaton: `Bearer ${token}`,
+        }
+      );
+
       const response = await request(
         `${REST_API_LINK}/api/meetings/meeting/schedule/${meetingId}`,
         "PUT",
@@ -332,6 +373,7 @@ const Schedule = ({ navigation, route }) => {
         ]);
       } else {
         Alert.alert("Succes", response.message);
+        setIsScheduled(true);
       }
     } catch (error) {
       console.log("Error @Schedule/scheduleMeeting: ", error.message);
@@ -428,6 +470,48 @@ const Schedule = ({ navigation, route }) => {
   return fullLoading ? (
     <View style={styles.container}>
       <LoadingPage />
+    </View>
+  ) : meeting.isScheduled ? (
+    <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <MaterialCommunityIcons
+          name="calendar-check"
+          size={100}
+          color="black"
+        />
+        <CustomText large center bold>
+          The meeting is scheduled
+        </CustomText>
+        <CustomText center>{`Activity: ${meeting.activity.name}`}</CustomText>
+        <CustomText center>{`Time: ${moment(meeting.time[0]).format(
+          "MMM Do YYYY, HH:mm"
+        )} - ${moment(meeting.time[1]).format(
+          "MMM Do YYYY, HH:mm"
+        )}`}</CustomText>
+        <CustomText center>{`Location: ${
+          !meeting.location ? "Not selected yet" : "See on map"
+        }`}</CustomText>
+      </View>
+      <View style={styles.selectButtonsContainer}>
+        {!meeting.location ? (
+          <Button status="info">Select Location</Button>
+        ) : (
+          <Button
+            disabled={
+              moment().valueOf >= moment(meeting.time[0]).subtract({ days: 1 })
+            }
+            status="warning"
+          >
+            Change location
+          </Button>
+        )}
+      </View>
     </View>
   ) : (
     <KeyboardAvoidingView
@@ -628,10 +712,9 @@ const Schedule = ({ navigation, route }) => {
         <ModalTimepicker
           showDate={showModalPicker}
           setShowDate={setShowModalPicker}
-          // selectedDate={adminsPick}
-          // setSelectedDate={setAdminsPick}
           setLoadingScheduleMeeting={setLoadingScheduleMeeting}
           meeting={meeting}
+          setIsScheduled={setIsScheduled}
         />
       </ScrollView>
     </KeyboardAvoidingView>
