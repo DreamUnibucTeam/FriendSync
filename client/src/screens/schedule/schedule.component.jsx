@@ -16,7 +16,7 @@ import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import CustomText from "../../components/customText/customText.component";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ScheduleTimePickerIOS from "../../components/schedule-timepicker/schedule-timepicker-ios.component";
 import ScheduleTimePickerAndroid from "../../components/schedule-timepicker/schedule-timepicker-android.component";
 import {
@@ -28,6 +28,7 @@ import {
 } from "@ui-kitten/components";
 import LoadingPage from "../../components/loading-page/loading-page.component";
 import PollItem from "../../components/poll-item/poll-item.component";
+import ModalTimepicker from "../../components/modal-timepicker/modal-timepicker.component";
 import moment from "moment";
 
 import { GroupContext } from "../../context/GroupContext";
@@ -69,6 +70,10 @@ const Schedule = ({ navigation, route }) => {
   const [hasVoted, setHasVoted] = useState(false);
   const [totalMembers, setTotalMembers] = useState(0);
   const [voters, setVoters] = useState([]);
+  const [loadingScheduleMeeting, setLoadingScheduleMeeting] = useState(false);
+  const [loadingRemoveMeeting, setLoadingRemoveMeeting] = useState(false);
+  const [adminsPick, setAdminsPick] = useState(new Date());
+  const [showModalPicker, setShowModalPicker] = useState(false);
 
   /* Backend Requests */
   useEffect(() => {
@@ -236,6 +241,103 @@ const Schedule = ({ navigation, route }) => {
       Alert.alert("Error", error.message);
     }
     setLoadingActivitySubmit(false);
+  };
+
+  const removeConfirmation = () => {
+    const uid = auth.currentUser.uid;
+    if (group.owner !== uid)
+      return Alert.alert(
+        "Not enough permissions",
+        "You don't have enough permissions to do this operation"
+      );
+
+    Alert.alert(
+      "Remove Confrimation",
+      "Are you sure you want to delete this meeting? Everything related to it will be deleted",
+      [
+        {
+          text: "Delete",
+          onPress: removeMeeting,
+          style: "destructive",
+        },
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+      ]
+    );
+  };
+
+  const removeMeeting = async () => {
+    setLoadingRemoveMeeting(true);
+    try {
+      const uid = auth.currentUser.uid;
+      const token = await auth.currentUser.getIdToken();
+      const groupId = group.id;
+      const meetingId = meeting.id;
+
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/meeting/${meetingId}`,
+        "DELETE",
+        {
+          uid,
+          groupId,
+        },
+        {
+          Authorizaton: `Bearer ${token}`,
+        }
+      );
+      Alert.alert("Success", response.message);
+      navigation.navigate("GroupMeetings");
+    } catch (error) {
+      console.log("Error @Schedule/removeMeeting: ", error.message);
+      Alert.alert("Error", error.message);
+    }
+    setLoadingRemoveMeeting(false);
+  };
+
+  const scheduleMeeting = async () => {
+    const uid = auth.currentUser.uid;
+    if (group.owner !== uid)
+      return Alert.alert(
+        "Not enough permissions",
+        "You don't have enough permissions to do this operation"
+      );
+
+    if (voters.length / totalMembers < 0.75) {
+      const requiredVotes = Math.ceil(totalMembers * 0.75) - voters.length;
+      return Alert.alert(
+        "Not enough votes",
+        `Not enough people have voted. ${requiredVotes} more votes required.`
+      );
+    }
+
+    setLoadingScheduleMeeting(true);
+    try {
+      const meetingId = group.meeting.id;
+      const token = await auth.currentUser.getIdToken();
+
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/meeting/schedule/${meetingId}`,
+        "PUT",
+        null,
+        {
+          Authorizaton: `Bearer ${token}`,
+        }
+      );
+      if (response.status === "not-scheduled") {
+        Alert.alert("Couldn't schedule meeting", response.message, [
+          { text: "Select", onPress: () => setShowModalPicker(true) },
+        ]);
+      } else {
+        Alert.alert("Succes", response.message);
+      }
+    } catch (error) {
+      console.log("Error @Schedule/scheduleMeeting: ", error.message);
+      Alert.alert("Error", error.message);
+    }
+    setLoadingScheduleMeeting(false);
   };
 
   /* Schedule */
@@ -492,10 +594,45 @@ const Schedule = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.selectButtonsContainer}>
-          <Button onPress={() => console.log("Schedule Meeting")}>
-            Schedule Meeting
+          <Button
+            style={styles.scheduleButton}
+            status="success"
+            onPress={scheduleMeeting}
+          >
+            {loadingScheduleMeeting ? (
+              <ActivityIndicator
+                size="small"
+                color="#fff"
+                style={styles.loading}
+              />
+            ) : (
+              "Schedule Meeting"
+            )}
+          </Button>
+          <Button
+            style={styles.scheduleButton}
+            status="danger"
+            onPress={removeConfirmation}
+          >
+            {loadingRemoveMeeting ? (
+              <ActivityIndicator
+                size="small"
+                color="#fff"
+                style={styles.loading}
+              />
+            ) : (
+              "Remove Meeting"
+            )}
           </Button>
         </View>
+        <ModalTimepicker
+          showDate={showModalPicker}
+          setShowDate={setShowModalPicker}
+          // selectedDate={adminsPick}
+          // setSelectedDate={setAdminsPick}
+          setLoadingScheduleMeeting={setLoadingScheduleMeeting}
+          meeting={meeting}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

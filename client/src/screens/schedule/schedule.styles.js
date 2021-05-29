@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   selectButtonsContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     marginVertical: 20,
   },
 });

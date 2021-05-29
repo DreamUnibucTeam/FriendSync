@@ -100,6 +100,7 @@ const SignUpScreen = ({ navigation }) => {
       setProfilePhoto(null);
       Alert.alert("Succes", "You have successfully signed up!");
     } catch (error) {
+      Alert.alert("Error", error.message);
       console.log("Error @signUp: ", error.message);
     } finally {
       setLoading(false);

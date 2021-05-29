@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StatusBar,
   Keyboard,
@@ -29,6 +30,7 @@ const SignInScreen = ({ navigation }) => {
       setEmail("");
       setPassword("");
     } catch (error) {
+      Alert.alert("Error", error.message);
       console.log("Error @signIn: ", error.message);
     } finally {
       setLoading(false);
@@ -99,23 +101,6 @@ const SignInScreen = ({ navigation }) => {
               </CustomText>
             </CustomText>
           </TouchableOpacity>
-
-          {
-            /* Temp */
-            // <TouchableOpacity
-            //   style={styles.signContainer}
-            //   onPress={() => auth.signOut()}
-            //   disabled={loading}
-            // >
-            //   {loading ? (
-            //     <ActivityIndicator style={styles.loading} />
-            //   ) : (
-            //     <CustomText bold center color="#fff">
-            //       Sign Out
-            //     </CustomText>
-            //   )}
-            // </TouchableOpacity>
-          }
 
           <View style={styles.headerGraphic}>
             <View style={styles.rightCircle} />

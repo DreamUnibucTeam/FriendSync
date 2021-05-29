@@ -14,7 +14,11 @@ router.get("/group/:id", controller.getAllMeetings);
 
 router.post("/meeting", controller.createMeeting);
 
+router.delete("/meeting/:id", controller.removeMeeting);
+
 router.put("/meeting/schedule/:id", controller.getBestInterval);
+
+router.put("/meeting/setSchedule/:id", controller.setSchedule);
 
 router.put("/meeting/location/:id", controller.setLocation);
 
