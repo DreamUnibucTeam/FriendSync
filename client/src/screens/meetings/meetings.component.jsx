@@ -72,6 +72,11 @@ const Meetings = ({ navigation }) => {
           renderItem={({ item }) => (
             <CustomListItem
               name={item.name}
+              photoUrl={
+                item.isScheduled
+                  ? "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/assets%2FscheduledMeeting.png?alt=media&token=a3ae97f4-b710-4b84-b099-71ace903ca79"
+                  : "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/assets%2FunscheduledMeeting.png?alt=media&token=7b452ebb-84c9-41ec-a532-8efe6be4cf91"
+              }
               onPress={() => {
                 setGroup({
                   ...group,

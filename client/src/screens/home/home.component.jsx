@@ -49,9 +49,32 @@ const Home = ({ navigation }) => {
     }
   }, [request]);
 
-  useEffect(() => {
-    isFocused && getAllFriendRequests();
+  const getAllScheduledMeetings = useCallback(async () => {
+    try {
+      const uid = auth.currentUser.uid;
+      const token = await auth.currentUser.getIdToken();
+
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/userMeetings/${uid}`,
+        "GET",
+        null,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+
+      setMeetings(response.meetings);
+    } catch (error) {
+      console.log("Error @Home/getAllFriendRequests: ", error.message);
+      Alert.alert("Error", error.message);
+    }
     setFirstLoading(false);
+  }, []);
+
+  useEffect(() => {
+    // setFirstLoading(true);
+    isFocused && getAllFriendRequests();
+    isFocused && getAllScheduledMeetings();
   }, [isFocused]);
 
   /* Functions for friend requests part */
@@ -162,16 +185,15 @@ const Home = ({ navigation }) => {
     <AntDesign name="right" size={24} color="black" />
   );
 
-  const renderGroupMeeting = ({ meetingId, groupName }) => {
+  const renderGroupMeeting = (item) => (
     <ListItem
-      key={meetingId}
-      title="Meeting 1"
-      description="Group 1"
+      key={item.id}
+      title={item.name}
+      description={`Meeting in ${item.groupName}`}
       style={styles.listItem}
-      accessoryRight={ArrowIcon}
-      onPress={() => navigateToGroup(id)}
-    />;
-  };
+      // accessoryRight={ArrowIcon}
+    />
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -251,19 +273,3 @@ const Home = ({ navigation }) => {
 };
 
 export default Home;
-
-{
-  // <TouchableOpacity
-  //   style={{
-  //     marginHorizontal: 32,
-  //     height: 48,
-  //     alignItems: "center",
-  //     justifyContent: "center",
-  //     backgroundColor: "#8022d8",
-  //     borderRadius: 6,
-  //   }}
-  //   onPress={() => auth.signOut()}
-  // >
-  //   <Text>Sign out</Text>
-  // </TouchableOpacity>
-}

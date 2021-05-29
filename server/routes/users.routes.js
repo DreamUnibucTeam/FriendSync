@@ -27,10 +27,12 @@ router.post("/friendRequests/:id", controller.acceptFriendRequest);
 router.delete("/friendRequests/:id", controller.rejectFriendRequest);
 
 /* Belongs To */
+router.get("/belongsTo/groups/:uid", controller.getGroups);
+
 router.post("/belongsTo", controller.addToGroup);
 
-router.put("/belongsTo/:uid", controller.changeSchedule);
+router.get("/belongsTo/:uid/:groupId", controller.getSchedule);
 
-router.get("/belongsTo/groups/:uid", controller.getGroups);
+router.put("/belongsTo/:uid", controller.changeSchedule);
 
 module.exports = router;

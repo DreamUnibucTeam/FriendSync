@@ -1,17 +1,8 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  headerText: {
-    marginVertical: 40,
-    marginHorizontal: 50,
-  },
   scheduleContainer: {
+    flex: 1,
     maxHeight: 750,
     borderRadius: 10,
     marginVertical: 20,
@@ -25,7 +16,7 @@ const styles = StyleSheet.create({
   scheduleContent: {
     backgroundColor: "#fff", //"#f2f2f2",
     // height: 300,
-    maxHeight: 650,
+    maxHeight: 700,
     marginHorizontal: 8,
     borderRadius: 5,
     paddingVertical: 10,
@@ -43,9 +34,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   scheduleList: {
-    maxHeight: 250,
-    // height: 250,
-    marginBottom: 10,
+    maxHeight: 300,
+    // height: 300,
   },
   scheduleSelector: {
     // flex: 1,
@@ -77,59 +67,6 @@ const styles = StyleSheet.create({
   timePickers: {
     flexDirection: "row",
     justifyContent: "center",
-  },
-  loading: {
-    color: "#fff",
-    width: 34,
-  },
-  activityList: {
-    maxHeight: 250,
-    // height: 250,
-    marginBottom: 10,
-    paddingHorizontal: 20,
-  },
-  input: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    marginBottom: 10,
-  },
-  inputContainer: {
-    marginBottom: 32,
-  },
-  inputTitle: {
-    color: "#8e93a1",
-    fontSize: 12,
-    textTransform: "uppercase",
-    fontWeight: "300",
-  },
-  inputField: {
-    borderBottomColor: "#8e93a1",
-    borderBottomWidth: 0.5,
-    height: 48,
-  },
-  pollContainer: {
-    width: "100%",
-    height: 20,
-  },
-  pollLine: {
-    width: "100%",
-    height: 5,
-    backgroundColor: "#3386FF",
-    borderRadius: 100,
-  },
-  activitySelector: {
-    maxHeight: 400,
-    paddingTop: 20,
-    paddingHorizontal: 10,
-  },
-  activityButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-  },
-  selectButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginVertical: 20,
   },
 });
 

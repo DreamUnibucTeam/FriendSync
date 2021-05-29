@@ -19,6 +19,7 @@ import moment from "moment";
 import { AntDesign } from "@expo/vector-icons";
 
 import styles from "./add-meeting.styles";
+import defaultActivities from "./default-activities.data";
 
 import CustomText from "../../components/customText/customText.component";
 import { auth } from "../../firebase/firebase";
@@ -54,8 +55,8 @@ const AddMeeting = ({ navigation }) => {
         {
           name,
           groupId,
-          startInterval: moment(realRange.startDate).unix(),
-          endInterval: moment(realRange.endDate).unix(),
+          startInterval: moment(realRange.startDate).valueOf(),
+          endInterval: moment(realRange.endDate).valueOf(),
           duration: {
             hours,
             minutes,
@@ -65,10 +66,30 @@ const AddMeeting = ({ navigation }) => {
           Authorization: `Bearer ${token}`,
         }
       );
+      for (const activity of defaultActivities) {
+        await createActivity(activity.name, response.meetingId);
+      }
       Alert.alert("Success", response.message);
       navigation.navigate("GroupMeetings");
     } catch (error) {
       console.log("Error @AddMeeting/createMeeting: ", error.message);
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  const createActivity = async (name, meetingId) => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const response = await request(
+        `${REST_API_LINK}/api/meetings/activity`,
+        "POST",
+        { name, meetingId },
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+    } catch (error) {
+      console.log("Error @AddMeeting/createActivity: ", error.message);
       Alert.alert("Error", error.message);
     }
   };
@@ -80,14 +101,6 @@ const AddMeeting = ({ navigation }) => {
         ? new Date(moment(nextRange.startDate).add({ days: 1 }))
         : new Date(moment(nextRange.endDate).add({ days: 1 }));
     setRealRange({ ...nextRange, endDate: newEndDate });
-
-    // console.log({
-    //   ...nextRange,
-    //   endDate:
-    //     nextRange.endDate === null
-    //       ? new Date(moment(nextRange.startDate).add({ days: 1 }))
-    //       : new Date(moment(nextRange.endDate).add({ days: 1 })),
-    // });
   };
 
   const selectDuration = (time) => {
@@ -191,103 +204,3 @@ const AddMeeting = ({ navigation }) => {
 };
 
 export default AddMeeting;
-
-// <Calendar
-//               style={{ marginHorizontal: 20 }}
-//               onDayPress={(day) => {
-//                 console.log("selected day", day);
-//               }}
-//               firstDay={1}
-//               minDate={new Date()}
-//               markedDates={{
-//                 "2021-05-25": {
-//                   // selected: true,
-//                 },
-//                 "2021-05-28": { startingDay: true, color: "green" },
-//                 "2021-05-29": { color: "green" },
-//                 "2021-05-30": {
-//                   selected: true,
-//                   endingDay: true,
-//                   color: "green",
-//                 },
-//               }}
-//               markingType={"period"}
-//             />
-
-// const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-// const showDatePicker = () => {
-//   setDatePickerVisibility(true);
-// };
-
-// const hideDatePicker = () => {
-//   setDatePickerVisibility(false);
-// };
-
-// const handleConfirm = (date) => {
-//   console.warn("A date has been picked: ", date);
-//   hideDatePicker();
-// };
-
-// return (
-//   <View>
-//     <Button title="Show Date Picker" onPress={showDatePicker} />
-//     <DateTimePickerModal
-//       isVisible={isDatePickerVisible}
-//       display="spinner"
-//       isDarkModeEnabled={true}
-//       mode="time"
-//       onConfirm={handleConfirm}
-//       onCancel={hideDatePicker}
-//     />
-//   </View>
-// );
-
-// const [date, setDate] = useState(new Date(1598051730000));
-// const [mode, setMode] = useState("date");
-// const [show, setShow] = useState(false);
-
-// const onChange = (event, selectedDate) => {
-//   const currentDate = selectedDate || date;
-//   setShow(Platform.OS === "ios");
-//   setDate(currentDate);
-// };
-
-// const showMode = (currentMode) => {
-//   setShow(true);
-//   setMode(currentMode);
-// };
-
-// const showDatepicker = () => {
-//   showMode("datetime");
-// };
-
-// const showTimepicker = () => {
-//   showMode("time");
-// };
-
-// return (
-//   <View style={styles.container}>
-//     <Text>Add Meeting</Text>
-//     <View>
-//       <View>
-//         <Button onPress={showDatepicker} title="Show date picker!" />
-//       </View>
-//       <View>
-//         <Button onPress={showTimepicker} title="Show time picker!" />
-//       </View>
-//       {show && (
-//         <DateTimePicker
-//           testID="dateTimePicker"
-//           display="spinner"
-//           value={date}
-//           mode={mode}
-//           minimumDate={new Date()}
-//           is24Hour={true}
-//           display="default"
-//           onChange={onChange}
-//         />
-//       )}
-//     </View>
-//   </View>
-// );

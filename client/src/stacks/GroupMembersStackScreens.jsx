@@ -41,7 +41,7 @@ const GroupMembersStackScreens = ({ navigation }) => {
       );
 
       Alert.alert("Succes", response.message);
-      navigation.navigate("Groups");
+      navigation.navigate("GroupList");
     } catch (error) {
       console.log(
         "Error @GroupMembersStackScreens/removeGroupAPI: ",

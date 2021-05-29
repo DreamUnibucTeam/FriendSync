@@ -43,7 +43,7 @@ const GroupController = (() => {
           const groupId = result.id;
           const makeAdminResult = await db
             .collection("belongsTo")
-            .add({ userUid: uid, groupId, isAdmin: true, schedule: null });
+            .add({ userUid: uid, groupId, isAdmin: true, schedule: [] });
           res
             .status(200)
             .json({ message: "Group has been created successfully" });
