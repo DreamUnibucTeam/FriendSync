@@ -500,7 +500,16 @@ const Schedule = ({ navigation, route }) => {
       </View>
       <View style={styles.selectButtonsContainer}>
         {!meeting.location ? (
-          <Button status="info">Select Location</Button>
+          <Button 
+            status="info"
+            onPress={() => {
+                console.log(meeting)
+                navigation.navigate("Map")
+              }
+            }
+          >
+            Select Location
+          </Button>
         ) : (
           <Button
             disabled={

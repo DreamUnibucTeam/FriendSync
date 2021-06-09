@@ -148,8 +148,11 @@ const Map = ({navigation}) => {
       </View>
       <View style={{alignSelf:'flex-end',position:'absolute', bottom: '5%', right: '5%'}}>
         <Button
-          style={{ position:'absolute', left: 0, bottom: 0, right: 0}}
-          title="Choose"
+            status="info"
+        
+            style={{ position:'absolute', left: 0, bottom: 0, right: 0}}
+            title="Choose"
+            onPress = {() => navigation.navigate("Schedule")}
         ></Button>
       </View>
       
@@ -170,14 +173,8 @@ export default Map;
   /> */
 }
 const ImageMarkerWrapper = styled.Image`
-  flex: 1;
-  /* border: solid 2px gray; */
-  border-width: 1px;
-  border-radius: 50px;
-  align-items: center;
-  justify-content: center;
-  height: 75px;
-  width: 75px;
+width: 10%;
+height: 10%;
 `;
 
 const ChooseLocationButton = styled.Button`
