@@ -143,13 +143,42 @@ const UserController = (() => {
         try {
           const userRef = db.collection("users").doc(uid);
           const response = await userRef.update({ location: coordonate });
-          return res.status(200).json({ message: "Succesfully updated user" });
+          return res
+            .status(200)
+            .json({ message: "Succesfully updated user's location" });
           // return res.status(404).json({ message: "Unable to update user's location"});
         } catch (error) {
           console.log("Error @UserController/updateLocation: ", error.message);
           return res
             .status(500)
             .json({ message: "Unable to update user's location" });
+        }
+      },
+
+      getUsersLocation: async (req, res) => {
+        try {
+          const usersQuery = await db.collection("users").get();
+
+          const usersLocations = [];
+          if (!usersQuery.empty) {
+            usersQuery.forEach((user) => {
+              if (user.data().location)
+                usersLocations.push({
+                  userUid: user.id,
+                  location: user.data().location,
+                });
+            });
+          }
+
+          return res.status(200).json({ usersLocations });
+        } catch (error) {
+          console.log(
+            "Error @UserController/getUsersLocation: ",
+            error.message
+          );
+          return res
+            .status(500)
+            .json({ message: "Unable to get users' location" });
         }
       },
 
