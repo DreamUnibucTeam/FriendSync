@@ -1,17 +1,21 @@
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps"; // remove PROVIDER_GOOGLE import if not using Google Maps
-import { StyleSheet, View, Text, Image, Button } from "react-native";
+import { StyleSheet, View, Text, Image, Button, Alert } from "react-native";
 import { Icon } from "react-native-elements";
 import React, { useState, useEffect, useContext } from "react";
 import * as Location from "expo-location";
 import styled from "styled-components";
 
-import {useHttp} from '../../hooks/http.hook'
+import { useHttp } from '../../hooks/http.hook'
+import { useIsFocused } from "@react-navigation/native";
 import { UserContext } from "../../context/UserContext";
+import {GroupContext} from '../../context/GroupContext'
 import { PropsService } from "@ui-kitten/components/devsupport";
 import CustomText from '../../components/customText/customText.component'
+import getLocationAddress from './geoLocator'
+import {auth} from '../../firebase/firebase'
 
 const styles = StyleSheet.create({
-  container: {
+  mapContainer: {
     ...StyleSheet.absoluteFillObject,
 
     justifyContent: "center",
@@ -21,32 +25,49 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     
   },
-  marker: {
-    borderColor: "red",
-    borderRadius: 0,
+  infoContainer: {
+    backgroundColor:'white', 
+    margin:10, 
+    padding:10, 
+    height:50, 
+    borderRadius:10
   },
+  buttonConainer: {
+    alignSelf:'flex-end',
+    position:'absolute', 
+    bottom: '5%', 
+    right: '5%'
+  },
+  imageContainer: {
+    position: 'absolute', 
+    width:'100%', 
+    height:'100%', 
+    flex:1, 
+    alignItems:'center', 
+    justifyContent: 'center'
+  }
 });
 
 const Map = ({navigation}) => {
   const [user, _] = useContext(UserContext);
+  const [group, setGroup] = useContext(GroupContext)
   const {request, error, loading, REST_API_LINK} = useHttp()
 
   const [locationInfo, setLocationInfo] = useState({
-    type: "blea",
+    type: "blea", 
     name: "nlea",
     road: 'roaddd',
     houseNumber: ''
-
   });
   const [errorMsg, setErrorMsg] = useState(null);
-
+  
   const [region, setRegion] = useState({
     latitudeDelta: 0.005,
     longitudeDelta: 0.005,
-    latitude: 47.098,
-    longitude: 28.8247
-    
+    latitude: group.meeting && group.meeting.location ? group.meeting.location.latitude : 47.098,
+    longitude: group.meeting && group.meeting.location ? group.meeting.location.longitude : 28.8247
   })
+  const isFocused = useIsFocused()
 
   useEffect(() => {
     (async () => {
@@ -57,86 +78,53 @@ const Map = ({navigation}) => {
       }
 
       let currLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currLocation);
+      setRegion({...region, latitude: currLocation.latitude, longitude: currLocation.longitude});
     })();
   }, []);
 
   const markerUrl = 'https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/assets%2FchooseLocationMarker.png?alt=media&token=c73f8a3e-4002-4951-816f-c1dc0f71f08b'
-    
-
-  const getGoogleLocationAddress = async () => {
+  
+  const setMeetingLocation = async () => {
     try {
-      const geoLink = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${region.latitude},${region.longitude}&key=AIzaSyCT-UD_TzioTpxo5hJ9uhASQhkLq6vqZA4` 
-      const data = await request(geoLink)
-
-      const placeId = data.results[0].place_id
-      const placeLink = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=AIzaSyCT-UD_TzioTpxo5hJ9uhASQhkLq6vqZA4`
-
-      console.log(placeId)
-      const placeData = await request(placeLink)
-      const result = placeData.result
-    
-      console.log(result.formatted_address, result.name)
+       const location = {
+        latitude: region.latitude,
+        longitude: region.longitude,
+        address: (locationInfo.road !== undefined ? locationInfo.road : "") + 
+                 (locationInfo.houseNumber !== undefined ? " " + locationInfo.houseNumber : ""),
+        name: (locationInfo.name !== undefined ? locationInfo.name : "")
+      }
+       const token = await auth.currentUser.getIdToken()
+       const response = await request(`${REST_API_LINK}/api/meetings/meeting/location/${group.meeting.id}`, 'PUT', location, {
+         Authorization: `Bearer ${token}`
+       })
+       
+       setGroup({ ...group, meeting: {...group.meeting, location  }})
+       Alert.alert("Success", response.message)
     } catch (error) {
-      console.log("Error @Map/getLocationAddress: ", error.message)
-    }
-  }
-
-  const getLocationAddress = async () => {
-    try {
-      
-      const geoLink = `https://api.opencagedata.com/geocode/v1/json?q=${region.latitude}%2C%20${region.longitude}&key=007c45636d1d4023ae4daabd42e15dec&language=en&pretty=1` 
-
-      const data = await request(geoLink)
-      const components = data.results[0].components
-      const type = components["_type"]
-      const name = components[type]
-      const road = components['road']
-      const houseNumber = components['house_number']
-      console.log(type, name, road)
-      setLocationInfo({type:type, name:name, road:road, houseNumber:houseNumber})
-      
-
-      console.log(components)
-    } catch (error) {
-      console.log("Error @Map/getLocationAddress: ", error.message)
+      console.log("Error @MapSelector/setMeetingLocation", error.message)
+      Alert.alert("Error", error.message)
     }
   }
 
   return (
     <View style={{height:'100%', flex:1}}>
-      <View style={styles.container}>
+      <View style={styles.mapContainer}>
         <MapView
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={styles.map}
           initialRegion={region}
           onRegionChangeComplete = {async reg => {
             setRegion(reg)
-            await getLocationAddress()
+            setLocationInfo(await getLocationAddress(request, reg))
           }}
-        >
-          
-          
-          
-          {/* <Marker
-            title={user.displayName}
-            description="5 km"
-            coordinate={{
-              latitude: location?.coords.latitude,
-              longitude: location?.coords.longitude,
-            }}
-          >
-            <Text>{user.displayName}</Text>
-            <ImageMarkerWrapper source={{ uri: user.profilePhotoUrl }} />
-          </Marker> */}
-        </MapView>
-        <View style={{position: 'absolute', width:'100%', height:'100%', flex:1, alignItems:'center', justifyContent: 'center'}}>
+        />
+        <View style={styles.imageContainer}>
           <ImageMarkerWrapper source={{ uri: markerUrl }} />
           
         </View>
         
       </View>
-      <View style={{backgroundColor:'white', margin:10, padding:10, height:50, borderRadius:10}}>
+      <View style={styles.infoContainer}>
         <View>
           <CustomText center medium>{
             ((locationInfo.type == 'building' || locationInfo.type == 'road' || locationInfo.type === undefined)? "":locationInfo.name + ', ') + 
@@ -146,13 +134,18 @@ const Map = ({navigation}) => {
         </View>
         
       </View>
-      <View style={{alignSelf:'flex-end',position:'absolute', bottom: '5%', right: '5%'}}>
+      <View style={styles.buttonConainer}>
         <Button
             status="info"
         
             style={{ position:'absolute', left: 0, bottom: 0, right: 0}}
             title="Choose"
-            onPress = {() => navigation.navigate("Schedule")}
+            onPress = {
+              async () => {
+                await setMeetingLocation()
+                navigation.navigate("Schedule")
+              }
+            }
         ></Button>
       </View>
       
