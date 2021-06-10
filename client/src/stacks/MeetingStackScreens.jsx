@@ -17,10 +17,15 @@ const MeetingStackScreens = ({ navigation }) => {
         name="Map" 
         component={ChooseMeetingLocationMap} 
       />
-      <MeetingStack.Screen 
-        name="Map2" 
-        component={SeeFriendsLocationMap} 
-      />
+      {
+        group.meeting?.location ? 
+          <MeetingStack.Screen 
+            name="Map2" 
+            component={SeeFriendsLocationMap} 
+          />
+        :
+          <></>
+      }
     </MeetingStack.Navigator>
   );
 };

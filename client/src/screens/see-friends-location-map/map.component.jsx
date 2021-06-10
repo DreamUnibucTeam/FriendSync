@@ -11,6 +11,7 @@ import { auth } from "../../firebase/firebase";
 import { useHttp } from "../../hooks/http.hook";
 import { setIntervalAsync } from "set-interval-async/dynamic";
 import { clearIntervalAsync } from "set-interval-async";
+import { FlatList } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -31,8 +32,15 @@ const styles = StyleSheet.create({
 const Map = () => {
   const { request, loading, REST_API_LINK } = useHttp();
   const [user, _] = useContext(UserContext);
+  const [group, setGroup] = useContext(GroupContext);
   const [usersLocations, setUsersLocations] = useState([]);
   const [myLocation, setMyLocation] = useState({ latitude: 47, longitude: 29 });
+  const [region, setRegion] = useState({
+    latitudeDelta: 0.005,
+    longitudeDelta: 0.005,
+    latitude: 47,
+    longitude: 29
+  })
 
   const [location, setLocation] = useState({
     coords: {
@@ -42,7 +50,10 @@ const Map = () => {
   });
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const [group, setGroup] = useContext(GroupContext);
+
+  useEffect(() => {
+    setRegion({...region, latitude: group.meeting.location.latitude, longitude: group.meeting.location?.longitude})
+  }, [])
 
   useEffect(() => {
     let unsubscribeFromInterval = null;
@@ -89,38 +100,70 @@ const Map = () => {
       const myCurrentLocation = response.usersLocations.filter(
         (usloc) => usloc.userUid === uid
       )[0];
+      //console.log(myCurrentLocation?myCurrentLocation:null)
       setUsersLocations(response.usersLocations);
-      setMyLocation(myCurrentLocation);
-      // console.log("Users: ", response.usersLocations);
-      // console.log("Mine: ", myCurrentLocation);
+     // setMyLocation(myCurrentLocation?myCurrentLocation:null);
+      setRegion({...region, latitude: myLocation.latitude, longitude: myLocation.longitude})
+      //console.log("Users: ", response.usersLocations);
+      //console.log("Mine: ", myCurrentLocation);
     } catch (error) {
       console.log("Error @SeeFriendsMap/getUsersLocations: ", error.message);
     }
   };
+  const markerUrl =
+    "https://firebasestorage.googleapis.com/v0/b/friendsync-5fc52.appspot.com/o/assets%2FchooseLocationMarker.png?alt=media&token=c73f8a3e-4002-4951-816f-c1dc0f71f08b";
+
 
   return (
     <View style={styles.container}>
       <MapView
         provider={PROVIDER_GOOGLE} // remove if not using Google Maps
         style={styles.map}
-        region={{
-          latitude: location?.coords.latitude,
-          longitude: location?.coords.longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}
+        initialRegion={region}
+        onRegionChangeComplete={reg => setRegion(reg)}
       >
-        <Marker
-          title={user.displayName}
+        {(group.meeting)?
+        (<Marker
+          title={group.meeting.location?.name}
           description="5 km"
           coordinate={{
-            latitude: location?.coords.latitude,
-            longitude: location?.coords.longitude,
+            latitude: group.meeting.location?.latitude,
+            longitude: group.meeting.location?.longitude,
           }}
         >
-          <Text>{user.displayName}</Text>
-          <ImageMarkerWrapper source={{ uri: user.profilePhotoUrl }} />
-        </Marker>
+          <View style={{flex:1}}>
+            <Image 
+              source={{ uri: markerUrl }} 
+              style={{width: 40, height: 40}}
+              resizeMode="center"
+              resizeMethod="resize"
+            />
+          </View>
+        </Marker>)
+        :
+        null
+        }
+        {usersLocations.map(item => (
+          <Marker
+            title={item.name}
+            description="5 km"
+            coordinate={{
+              latitude: item.location.latitude,
+              longitude: item.location.longitude,
+            }}
+            key={item.userUid}
+            style={{flex:1, justifyContent:'center', alignItems:'center'}}
+          >
+
+            <Text 
+              style={{backgroundColor:'white', borderRadius:5, paddingLeft:5, paddingRight: 5}}
+            >
+              {item.name}
+            </Text>
+            <ImageMarkerWrapper source={{ uri: item.profilePhotoUrl }} />
+          </Marker>
+        ))}
+        
       </MapView>
     </View>
   );
@@ -136,13 +179,19 @@ export default Map;
   /> */
 }
 
+
+const ImageMainMarkerWrapper = styled.Image`
+  width: 160px;
+  height: 160px;
+  position: absolute;
+`;
+
+
 const ImageMarkerWrapper = styled.Image`
-  flex: 1;
-  /* border: solid 2px gray; */
-  border-width: 1px;
-  border-radius: 50px;
-  align-items: center;
-  justify-content: center;
-  height: 75px;
-  width: 75px;
+
+border-color: gray; 
+border-width: 2px;
+border-radius: 50px; 
+height: 50px;
+width: 50px;
 `;
