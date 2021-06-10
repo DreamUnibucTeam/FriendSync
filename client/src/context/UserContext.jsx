@@ -9,7 +9,7 @@ const UserContext = createContext([{}, () => {}]);
 
 const UserProvider = (props) => {
   useEffect(() => {
-    
+
   }, [])
 
   const [state, setState] = useState({
