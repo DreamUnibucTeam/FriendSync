@@ -174,7 +174,7 @@ const Map = ({ navigation }) => {
       </View>
       <View style={styles.buttonConainer}>
         <Button
-          // disabled={auth.currentUser && group.owner !== auth.currentUser}
+          disabled={auth.currentUser && group.owner !== auth.currentUser.uid}
           status="info"
           style={{ position: "absolute", left: 0, bottom: 0, right: 0 }}
           title="Choose"
