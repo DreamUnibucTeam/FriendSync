@@ -143,13 +143,52 @@ const UserController = (() => {
         try {
           const userRef = db.collection("users").doc(uid);
           const response = await userRef.update({ location: coordonate });
-          return res.status(200).json({ message: "Succesfully updated user" });
+          return res
+            .status(200)
+            .json({ message: "Succesfully updated user's location" });
           // return res.status(404).json({ message: "Unable to update user's location"});
         } catch (error) {
           console.log("Error @UserController/updateLocation: ", error.message);
           return res
             .status(500)
             .json({ message: "Unable to update user's location" });
+        }
+      },
+
+      getUsersLocation: async (req, res) => {
+        try {
+          const groupId = req.params.id
+          const groupUsersQuery = await db.collection('belongsTo').where('groupId', '==', groupId).get()
+          
+          const userIds = []
+          if (!groupUsersQuery.empty) {
+            groupUsersQuery.forEach((user) => {
+              userIds.push(user.data().userUid)
+            })
+          }
+          
+          const usersLocations = [];
+          for (const userUid of userIds) {
+            const userSnapshot = await db.collection('users').doc(userUid).get()
+            if (userSnapshot.exists && userSnapshot.data().location) {
+              usersLocations.push({
+                userUid,
+                name: userSnapshot.data().displayName,
+                profilePhotoUrl: userSnapshot.data().profilePhotoUrl,
+                location: userSnapshot.data().location
+              })
+            }
+          }
+
+          return res.status(200).json({ usersLocations });
+        } catch (error) {
+          console.log(
+            "Error @UserController/getUsersLocation: ",
+            error.message
+          );
+          return res
+            .status(500)
+            .json({ message: "Unable to get users' location" });
         }
       },
 

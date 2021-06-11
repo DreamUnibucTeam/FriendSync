@@ -61,7 +61,6 @@ const GroupStackScreens = ({ navigation }) => {
             headerBackTitleVisible: false,
           })}
         />
-        <GroupStack.Screen name="Map" component={Map} />
       </GroupStack.Navigator>
     </>
   );

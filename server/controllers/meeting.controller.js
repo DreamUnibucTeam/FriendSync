@@ -475,7 +475,7 @@ const MeetingController = (() => {
       setLocation: async (req, res) => {
         try {
           const id = req.params.id;
-          const { coordonate } = req.body;
+          const coordonate = req.body;
           const meetingRef = db.collection("meetings").doc(id);
           const meetingSnapshot = await meetingRef.get();
           if (!meetingSnapshot.exists) {

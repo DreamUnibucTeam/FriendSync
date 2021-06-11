@@ -47,7 +47,9 @@ describe("User Controller", () => {
     expect(res._getJSONData()).toBeDefined();
     expect(res._getJSONData()).not.toBeUndefined();
     expect(res._getJSONData()).not.toBeNull();
-    expect(res._getJSONData().message).toEqual("Succesfully updated user");
+    expect(res._getJSONData().message).toEqual(
+      "Succesfully updated user's location"
+    );
 
     /* Check the coordonates from the database after update */
     const adminSnapshot = await db.collection("users").doc(admin1).get();
