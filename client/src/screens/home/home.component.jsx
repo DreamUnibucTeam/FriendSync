@@ -265,7 +265,7 @@ const Home = ({ navigation }) => {
           }}
           onPress={() => auth.signOut()}
         >
-          <Text>Sign out</Text>
+          <Text style={{color: "#ffffff"}}>Sign out</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
