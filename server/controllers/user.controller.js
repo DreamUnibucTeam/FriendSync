@@ -157,19 +157,27 @@ const UserController = (() => {
 
       getUsersLocation: async (req, res) => {
         try {
-          const usersQuery = await db.collection("users").get();
-
+          const groupId = req.params.id
+          const groupUsersQuery = await db.collection('belongsTo').where('groupId', '==', groupId).get()
+          
+          const userIds = []
+          if (!groupUsersQuery.empty) {
+            groupUsersQuery.forEach((user) => {
+              userIds.push(user.data().userUid)
+            })
+          }
+          
           const usersLocations = [];
-          if (!usersQuery.empty) {
-            usersQuery.forEach((user) => {
-              if (user.data().location)
-                usersLocations.push({
-                  userUid: user.id,
-                  location: user.data().location,
-                  profilePhotoUrl: user.data().profilePhotoUrl,
-                  name: user.data().displayName
-                });
-            });
+          for (const userUid of userIds) {
+            const userSnapshot = await db.collection('users').doc(userUid).get()
+            if (userSnapshot.exists && userSnapshot.data().location) {
+              usersLocations.push({
+                userUid,
+                name: userSnapshot.data().displayName,
+                profilePhotoUrl: userSnapshot.data().profilePhotoUrl,
+                location: userSnapshot.data().location
+              })
+            }
           }
 
           return res.status(200).json({ usersLocations });

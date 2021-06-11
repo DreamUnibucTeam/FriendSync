@@ -10,7 +10,7 @@ const controller = UserController.getInstance();
 /* User routes */
 router.get("/relations/:uid", controller.getAllUserRelations);
 
-router.get("/locations", controller.getUsersLocation);
+router.get("/locations/:id", controller.getUsersLocation);
 
 router.put("/user/location/:uid", controller.updateLocation);
 

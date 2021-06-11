@@ -59,6 +59,8 @@ const Map = () => {
     let unsubscribeFromInterval = null;
     if (auth.currentUser) {
       unsubscribeFromInterval = setIntervalAsync(getUsersLocations, 5000);
+
+
     }
 
     return () =>
@@ -86,10 +88,11 @@ const Map = () => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const uid = auth.currentUser?.uid;
-      if (!auth.currentUser || !uid || !token) return;
+      const groupId = group.id
+      if (!auth.currentUser || !uid || !token || !groupId) return;
 
       const response = await request(
-        `${REST_API_LINK}/api/users/locations`,
+        `${REST_API_LINK}/api/users/locations/${groupId}`,
         "GET",
         null,
         {
@@ -97,11 +100,10 @@ const Map = () => {
         }
       );
 
-      const myCurrentLocation = response.usersLocations.filter(
-        (usloc) => usloc.userUid === uid
-      )[0];
-      //console.log(myCurrentLocation?myCurrentLocation:null)
-      setUsersLocations(response.usersLocations);
+      setUsersLocations(response.usersLocations)
+
+
+    //  setUsersLocations(response.usersLocations);
      // setMyLocation(myCurrentLocation?myCurrentLocation:null);
       setRegion({...region, latitude: myLocation.latitude, longitude: myLocation.longitude})
       //console.log("Users: ", response.usersLocations);
@@ -121,11 +123,11 @@ const Map = () => {
         style={styles.map}
         initialRegion={region}
         onRegionChangeComplete={reg => setRegion(reg)}
+        
       >
         {(group.meeting)?
         (<Marker
           title={group.meeting.location?.name}
-          description="5 km"
           coordinate={{
             latitude: group.meeting.location?.latitude,
             longitude: group.meeting.location?.longitude,
@@ -143,26 +145,39 @@ const Map = () => {
         :
         null
         }
-        {usersLocations.map(item => (
-          <Marker
-            title={item.name}
-            description="5 km"
-            coordinate={{
-              latitude: item.location.latitude,
-              longitude: item.location.longitude,
-            }}
-            key={item.userUid}
-            style={{flex:1, justifyContent:'center', alignItems:'center'}}
-          >
+        {usersLocations.map(item => 
+          {
 
-            <Text 
-              style={{backgroundColor:'white', borderRadius:5, paddingLeft:5, paddingRight: 5}}
-            >
-              {item.name}
-            </Text>
-            <ImageMarkerWrapper source={{ uri: item.profilePhotoUrl }} />
-          </Marker>
-        ))}
+            const distLat = 111139 * Math.abs(item.location.latitude - group.meeting.location.latitude)
+            const distLong = 111139 * Math.abs(item.location.longitude - group.meeting.location.longitude)
+            var distance = Math.sqrt(distLat * distLat + distLong * distLong)
+            var metric = 'm'
+            if (distance > 1000){
+              distance /= 1000
+              metric = 'km'
+            }
+            distance = Math.trunc(distance)           
+            return (
+              <Marker
+                title={item.name}
+                description={`${distance} ${metric} from destination`}
+                coordinate={{
+                  latitude: item.location.latitude,
+                  longitude: item.location.longitude,
+                }}
+                key={item.userUid}
+                style={{flex:1, justifyContent:'center', alignItems:'center'}}
+              >
+
+                <Text 
+                  style={{backgroundColor:'white', borderRadius:5, paddingLeft:5, paddingRight: 5}}
+                >
+                  {item.name}
+                </Text>
+                <ImageMarkerWrapper source={{ uri: item.profilePhotoUrl }} />
+              </Marker>
+          )
+        })}
         
       </MapView>
     </View>

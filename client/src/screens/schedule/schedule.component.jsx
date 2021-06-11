@@ -486,7 +486,7 @@ const Schedule = ({ navigation, route }) => {
           color="black"
         />
         <CustomText large center bold>
-          The meeting is scheduled
+          {moment().valueOf() <= moment(meeting.time[1]).valueOf() ? "The meeting is scheduled" : "The meeting has ended"}
         </CustomText>
         <CustomText center>{`Activity: ${meeting.activity.name}`}</CustomText>
         <CustomText center>{`Time: ${moment(meeting.time[0]).format(
@@ -495,32 +495,40 @@ const Schedule = ({ navigation, route }) => {
           "MMM Do YYYY, HH:mm"
         )}`}</CustomText>
         <CustomText center>{`Location: ${
-          !meeting.location ? "Not selected yet" : "See on map"
+          !meeting.location ? "Not selected yet" : meeting.location.name
         }`}</CustomText>
       </View>
-      <View style={styles.selectButtonsContainer}>
-        {!meeting.location ? (
-          <Button 
-            status="info"
-            onPress={() => {
-                console.log(meeting)
-                navigation.navigate("Map")
-              }
-            }
-          >
-            Select Location
-          </Button>
-        ) : (
-          <Button
-            disabled={
-              moment().valueOf >= moment(meeting.time[0]).subtract({ days: 1 })
-            }
-            status="warning"
-          >
-            Change location
-          </Button>
-        )}
-      </View>
+      {
+        moment().valueOf() <= moment(meeting.time[0]).valueOf() ?
+          (<View style={styles.selectButtonsContainer}>
+                {!meeting.location ? (
+                  <Button
+                    disabled={(auth.currentUser && group.owner !== auth.currentUser)}
+                    status="info"
+                    onPress={() => {
+                        // console.log(meeting)
+                        navigation.navigate("Map")
+                      }
+                    }
+                  >
+                    Select Location
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={
+                    (auth.currentUser && group.owner !== auth.currentUser) || moment().valueOf() >= moment(meeting.time[0]).subtract({ hours: 6 }).valueOf()
+                    }
+                    status="warning"
+                    onPress={() => {
+                      navigation.navigate("Map")
+                    }}
+                  >
+                    Change location
+                  </Button>
+                )}
+              </View>) : 
+              null
+          }
     </View>
   ) : (
     <KeyboardAvoidingView
