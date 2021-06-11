@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 export const useHttp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const REST_API_LINK = "http://192.168.1.3:8000";
+  const REST_API_LINK = "http://192.168.0.105:8000";
 
   const request = useCallback(
     async (url, method = "GET", body = null, headers = {}) => {
