@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
     backgroundColor: "#fff",
     flexDirection: "column",
   },
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   profilePhoto: {
-      flex: 1,
+    flex: 1,
   },
   userInfo: {
     marginBottom: 30,
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   statsGroup: {
     flexDirection: "row",
   },
-  statsItem:{
+  statsItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 25,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   statsText: {
     color: "#777777",
     marginHorizontal: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 15,
     lineHeight: 26,
   },
@@ -68,11 +68,11 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#8022d8",
+    backgroundColor: "#23a6d5",
     borderRadius: 6,
   },
   bugText: {
-    color: "#ffffff"
+    color: "#ffffff",
   },
 });
 
