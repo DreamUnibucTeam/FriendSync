@@ -253,20 +253,6 @@ const Home = ({ navigation }) => {
             )}
           </ScrollView>
         </HomescreenContainer>
-        <View></View>
-        <TouchableOpacity
-          style={{
-            marginHorizontal: 32,
-            height: 48,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#8022d8",
-            borderRadius: 6,
-          }}
-          onPress={() => auth.signOut()}
-        >
-          <Text style={{color: "#ffffff"}}>Sign out</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
