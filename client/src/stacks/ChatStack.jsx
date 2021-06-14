@@ -19,7 +19,9 @@ const ChatStackScreens = () => {
         backgroundColor={Platform.OS === "android" ? "#000" : ""}
       />
       <ChatStack.Navigator>
-        <ChatStack.Screen name="Chat" component={Chat} />
+        {
+          // <ChatStack.Screen name="Chat" component={Chat} />
+        }
         <ChatStack.Screen
           name="Meetings"
           component={GroupMeetingsStackScreens}
