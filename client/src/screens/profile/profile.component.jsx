@@ -138,7 +138,9 @@ const Profile = ({ navigation }) => {
             </View>
             <Text style={styles.statsText}>
               {" "}
-              {Math.round((stats.meetings / stats.groups) * 10)}{" "}
+              {stats.groups === 0
+                ? 0
+                : Math.round((stats.meetings / stats.groups) * 10)}{" "}
             </Text>
           </View>
         }

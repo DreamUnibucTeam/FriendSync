@@ -38,7 +38,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 import styles from "./schedule.styles";
 
-const Schedule = ({ navigation, route }) => {
+const Schedule = ({ navigation }) => {
   const [group, setGroup] = useContext(GroupContext);
   const [meeting, setMeeting] = useState({
     activity: {
